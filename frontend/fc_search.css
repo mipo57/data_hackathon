@@ -14,12 +14,10 @@
           align-items: center;
 }
 
-.wyszukiwarka > i {
-  font-size: 3rem;
-  color: black;
-  margin-right: 2rem;
+.wyszukiwarka .search-logo {
+  height: 3rem;
+  margin-right: 1rem;
   margin-left: 1rem;
-  opacity: 0.6;
 }
 
 .wyszukiwarka .text-field {
@@ -52,11 +50,13 @@
 }
 
 .wyszukiwarka .text-field input {
+  outline: none;
   font-size: 1.5rem;
-  height: 4rem;
-  border-radius: 2rem;
-  border-top-right-radius: 2rem;
-  border-bottom-right-radius: 2rem;
+  height: 3rem;
+  border-radius: 1.5rem;
+  border-top-right-radius: 1.5rem;
+  border-bottom-right-radius: 1.5rem;
+  border-color: #a8a8a8;
   border-style: solid;
   padding-left: 2rem;
   padding-right: 2rem;
@@ -67,12 +67,13 @@
 }
 
 .wyszukiwarka .text-field button {
-  height: 4rem;
+  height: 3rem;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
-  border-bottom-right-radius: 2rem;
-  border-top-right-radius: 2rem;
+  border-bottom-right-radius: 1.5rem;
+  border-top-right-radius: 1.5rem;
   border-style: solid;
+  border-color: #4caf50;
   border-left: none;
   background-color: #4caf50;
 }

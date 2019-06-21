@@ -57,33 +57,14 @@
     <!-- Searchbar -->
     <div class="fs_container">
         <div class="wyszukiwarka">
-            <i class="material-icons">school</i>
+            <img src="images/logo_search.png" class="search-logo"/>
             <div class="text-field">
                 <input id="searchbar" class="browser-default" type="text"
-                    placeholder="Jaka jest szkoła licealna we Wrocławiu?">
+                    placeholder="Jaka jest najlepsza szkoła licealna we Wrocławiu?">
                 <button id="search_btn"><i class="material-icons">search</i></button>
             </div>
         </div>
     </div>
-
-    <!-- Sidebar -->
-    <ul id="slide-out" class="sidenav">
-        <li>
-            <div class="user-view">
-                <div class="background">
-                    <img src="https://materializecss.com/images/office.jpg">
-                </div>
-                <a href="#name"><span class="white-text">Ustawienia wyszukiwania</span></a>
-            </div>
-        </li>
-        <li><a href="#!"><i class="material-icons">cloud</i>First Link With Icon</a></li>
-        <li><a href="#!">Second Link</a></li>
-        <li>
-            <div class="divider"></div>
-        </li>
-        <li><a class="subheader">Subheader</a></li>
-        <li><a class="waves-effect" href="#!">Third Link With Waves</a></li>
-    </ul>
 
     <!-- Buttons -->
     <div class="fixed-action-btn">
@@ -99,49 +80,42 @@
     </div>
 
     <!-- School view -->
-    <div id="school_view" class="modal">
-        <div class="modal-content">
-            <nav>
-                <div class="nav-wrapper">
-                    <div class="container">
-                        <a href="#" class="brand-logo">MEGA | Szczegóły szkoły</a>
-                        <ul id="nav-mobile" class="right hide-on-med-and-down">
-                            <li><a class="modal-close" href="#!"><i class="material-icons">close</i>
-                                </a></li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-            <div class="container">
-                <div class="row">
-                    <div class="col s12 m6">
-                        <p id="szkola_adres">ul. Składowa 5, 50-209 Wrocław</p>
-                    </div>
-                    <div class="col s12 m6">
-                        <div class="school-rating"></div>
-                        <p>Uczyłeś w tej placówce?<br />Dodaj opinie!</p>
-                    </div>
-                </div>
-
-
-                <div class="row">
-                    <div class="col s4 chart-container" style="position: relative">
-                        <canvas id="wykres_zdawalnosc"></canvas>
-                    </div>
-                    <div class="col s4 chart-container" style="position: relative">
-                        <canvas id="wykres_zdawalnosc1"></canvas>
-                    </div>
-                    <div class="col s4 chart-container" style="position: relative">
-                        <canvas id="wykres_zdawalnosc2"></canvas>
-                    </div>
-                    <div class="col s4 chart-container" style="position: relative">
-                        <canvas id="wykres_zdawalnosc3"></canvas>
-                    </div>
-                </div>
+    <ul id="school_view" class="sidenav">
+        <nav>
+            <div class="nav-wrapper">
+                <img class="logo" src="images/logo_white.png" alt="">
             </div>
+        </nav>
+        <h3 class="school-name">Liceum ogólnokształcące nr. 3</h3>
+        <div class="school-rating"></div>
 
-        </div>
-    </div>
+        <ul class="collection">
+            <li class="collection-item avatar">
+                <i class="material-icons circle">map</i>
+                <span class="title">Lokalizacja</span>
+                <p id="szkola_adres">
+                </p>
+            </li>
+            <li class="collection-item avatar">
+                <i class="material-icons circle">contact_phone</i>
+                <span class="title">Dane kontaktowe</span>
+                <p id="szkola_kontakt"></p>
+            </li>
+        </ul>
+        <li>
+            <div class="chart-container" style="position: relative">
+                <canvas id="wykres_matury"></canvas>
+            </div>
+        </li>
+        <!--
+        <li><a href="#!"><i class="material-icons">cloud</i>First Link With Icon</a></li>
+        <li><a href="#!">Second Link</a></li>
+        <li>
+            <div class="divider"></div>
+        </li>
+        <li><a class="subheader">Subheader</a></li>
+        <li><a class="waves-effect" href="#!">Third Link With Waves</a></li>-->
+    </ul>
 
     <div class="hidden">
         <div id="popup">
@@ -173,7 +147,7 @@
 
     // Star rating
     $(".school-rating").starRating({
-        starSize: 45,
+        starSize: 30,
         initialRating: 0,
         callback: function (currentRating, $el) {
             // make a server call here
@@ -259,51 +233,40 @@
     // var marker = L.marker([51.1202707, 17.0271432])
     showSchool = (school_info) => {
         console.log(school_info);
-        M.Modal.getInstance($('.modal').get(0)).open();
+        //M.Modal.getInstance($('.modal').get(0)).open();
+        M.Sidenav.getInstance($('#school_view').get(0)).open();
+        console.log(school_info)
 
-        let adress = school_info['Miejscowosc'] + ", ul. " + school_info['Ulica'] + " " + school_info['NrDomu']
+        // adress
+        let adress_ln1 = "ul. " + school_info['Ulica'] + " " + school_info['NrDomu']
+        let adress_ln2 = school_info["KodPocztowy"] + " " + school_info['Miejscowosc'];
+        $('#szkola_adres').html(adress_ln1 + "<br/>" + adress_ln2);
 
-        $('#szkola_adres').text(adress);
+        // concact info
+        let phone = school_info['Telefon'];
+        let www = school_info['WWW'];
+        let mail = school_info['Email'];
+        $('#szkola_kontakt').html(phone + "<br/>" + mail + "<br/>" + www);
 
-        var options = {
-            type: 'bar',
-            data: {
-                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple'],
+        dane_maturalne = {
+            labels: ['Matematyka', 'Fizyka', 'Chemia', 'Angielski', 'Niemiecki'],
                 datasets: [{
-                    label: 'Zdawalność matur [%]',
-                    data: [67, 70, 87, 90, 91],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(153, 102, 255,1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(255, 206, 86, 1)',
-                    ],
-                    borderWidth: 1
+                    data: [20, 10, 4, 2, 15],
+                    label: "Profil szkoły",
+                    backgroundColor: "rgba(52, 152, 219,0.5)",
+                    borderColor: "rgba(52, 152, 219,1.0"
                 }]
-            },
+        }
+
+        var myRadarChart = new Chart($("#wykres_matury"), {
+            type: 'radar',
+            data: dane_maturalne,
             options: {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true
-                        }
-                    }]
+                legend: {
+                    display: false
                 }
             }
-        };
-
-        var myChart = new Chart(document.getElementById('wykres_zdawalnosc'), options);
-        var myChart = new Chart(document.getElementById('wykres_zdawalnosc1'), options);
-        var myChart = new Chart(document.getElementById('wykres_zdawalnosc2'), options);
-        var myChart = new Chart(document.getElementById('wykres_zdawalnosc3'), options);
+        });
 
         let rating = school_info['RSPO'] % 6;
         $(".school-rating").starRating('setRating', rating);

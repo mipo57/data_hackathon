@@ -1,4 +1,6 @@
 $search_color: #4caf50;
+$input_border_color: rgb(168, 168, 168);
+$input_height: 3rem;
 
 .wyszukiwarka {
     border-radius: 50px;
@@ -10,12 +12,10 @@ $search_color: #4caf50;
     display: flex;
     align-items: center;
 
-    >i {
-        font-size: 3rem;
-        color: black;
-        margin-right: 2rem;
+    .search-logo {
+        height: 3rem;
+        margin-right: 1rem;
         margin-left: 1rem;
-        opacity: 0.6;
     }
 
     .text-field {
@@ -28,11 +28,13 @@ $search_color: #4caf50;
         }
 
         input {
+            outline:none;
             font-size: 1.5rem;
-            height: 4rem;
-            border-radius: 2rem;
-            border-top-right-radius: 2rem;
-            border-bottom-right-radius: 2rem;
+            height: $input_height;
+            border-radius: $input_height / 2;
+            border-top-right-radius: $input_height / 2;
+            border-bottom-right-radius: $input_height / 2;
+            border-color: $input_border_color;
             border-style: solid;
             padding-left: 2rem;
             padding-right: 2rem;
@@ -43,12 +45,13 @@ $search_color: #4caf50;
         }
 
         button {
-            height: 4rem;
+            height: $input_height;
             border-top-left-radius: 0;
             border-bottom-left-radius: 0;
-            border-bottom-right-radius: 2rem;
-            border-top-right-radius: 2rem;
+            border-bottom-right-radius: $input_height / 2;
+            border-top-right-radius: $input_height / 2;
             border-style: solid;
+            border-color: $search_color;
             border-left: none;
             background-color: $search_color;
 

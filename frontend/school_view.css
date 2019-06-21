@@ -1,16 +1,45 @@
-.modal {
-  width: 100vw;
-  height: 100vh;
-  top: 0 !important;
-  max-height: 500vh;
+#school_view {
+  width: 500px;
+}
+
+#school_view .logo {
+  height: 2.5rem;
+}
+
+#school_view .modal-content {
   padding: 0 !important;
 }
 
-.modal .modal-content {
-  padding: 0 !important;
+#school_view nav {
+  background-color: #20A291;
 }
 
-.modal nav {
-  margin-bottom: 4rem;
+#school_view nav .nav-wrapper {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  padding-left: 15px;
+}
+
+#school_view .school-name {
+  font-size: 2rem;
+  padding-left: 15px;
+  margin-bottom: 1rem;
+}
+
+#school_view .school-rating {
+  padding-left: 15px;
+  margin-bottom: 1.5rem;
+}
+
+#school_view .collection {
+  border: none;
+}
+
+#school_view .collection .collection-item {
+  border: none;
 }
 /*# sourceMappingURL=school_view.css.map */

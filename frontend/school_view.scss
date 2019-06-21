@@ -1,15 +1,40 @@
-.modal {
-    width: 100vw;
-    height: 100vh;
-    top: 0 !important;
-    max-height: 500vh;
-    padding: 0 !important;
+#school_view {
+    width: 500px;
+
+    .logo {
+        height: 2.5rem;
+    }
 
     .modal-content {
         padding: 0 !important;
     }
 
     nav {
-        margin-bottom: 4rem;
+        background-color: #20A291;
+
+        .nav-wrapper {
+            display: flex;
+            align-items: center;
+            padding-left: 15px;
+        }
+    }
+
+    .school-name {
+        font-size: 2rem;
+        padding-left: 15px;
+        margin-bottom: 1rem;
+    }
+
+    .school-rating {
+        padding-left: 15px;
+        margin-bottom: 1.5rem;
+    }
+
+    .collection {
+        border: none;
+
+        .collection-item {
+            border: none;
+        }
     }
 }
