@@ -4,12 +4,12 @@ from data_handler import DataHandler
 
 app = Flask(__name__)
 
-'''
+
 @app.route('/database_api/<place>')
 def get_place(place):
     dh = DataHandler()
     return dh.select_schools_by_place(place)
-'''
+
 
 
 @app.route('/database_api/getByDistance')
