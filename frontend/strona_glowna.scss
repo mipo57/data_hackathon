@@ -1,0 +1,44 @@
+body {
+    min-height: 100vh;
+    width: 100vw;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    background: linear-gradient(to bottom, #669999 0%,#669999 50%,#669999 50%,white 50%,white 100%);
+}
+
+.search_bar_flex {
+    height: 100vh;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+}
+
+.background {
+    height: 100vh;
+}
+
+.search-bar {
+    margin-right: auto;
+    margin-left: auto;
+    height: 5rem;
+    border-radius: 2.5rem;
+    background: beige;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-left: 2rem;
+    padding-right: 2rem;
+
+    input {
+        border: none;
+        background: transparent;
+        font-size:2rem;
+        min-width: 600px;
+        outline:none;
+
+        :focus {
+            border: none !important;
+        }
+    }
+}

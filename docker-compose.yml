@@ -9,11 +9,11 @@ services:
   database_api:
     build: "./database_api"
   database:
-    image: "antyfilidor/hackathon:littledb"
+    image: "antyfilidor/hackathon:alpha"
     environment:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=P@ssw0rd
   proxy:
     build: "./reverseproxy"
     ports:
-      - "11180:80"
+      - "80:80"
