@@ -1,5 +1,5 @@
 from flask import Flask, request
-from db_queries import DataHandler
+from data_handler import DataHandler
 
 
 app = Flask(__name__)

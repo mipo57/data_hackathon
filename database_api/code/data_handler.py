@@ -5,7 +5,7 @@ from math import sin, cos, sqrt, atan2, radians
 
 class DataHandler:
 
-    def __init__(self, server='database:1433', user='sa', password='P@ssw0rd', database='BetterEducation'): # zmienić na localhost
+    def __init__(self, server='localhost:1433', user='sa', password='P@ssw0rd', database='BetterEducation'): # zmienić na localhost
         self._conn = pymssql.connect(server=server, user=user, password=password, database=database)
 
     def _query_db(self, sql_query):
@@ -85,11 +85,18 @@ class DataHandler:
         return json.dumps([worse_1, worse_2, my_school, better_2, better_1])
 
     def select_school_by_rspo(self, rspo):
-        query_skeleton = 'SELECT * FROM szkolyAdresy INNER JOIN szkolyPlacowki sP on szkolyAdresy.RSPO = sP.RSPO WHERE' \
+        query_skeleton = 'SELECT * FROM szkolyAdresy INNER JOIN szkolyPlacowki sP on szkolyAdresy.RSPO = sP.RSPO WHERE'\
                          ' szkolyAdresy.RSPO = '
         my_school = self._query_db(query_skeleton + ' ' + rspo)
-        return json.dumps(my_school)
 
+        query_skeleton = 'SELECT NazwaPrz, PoziomPrz, TypPrz, SrWynik, LZdajacych, Rok FROM wynikiMatur INNER JOIN '\
+                         'przedmioty p on wynikiMatur.IDPrz = p.IDPrz WHERE RSPO = '
+        my_info = self._query_db(query_skeleton + rspo)
+
+        return json.dumps([my_school, my_info])
+
+    def get_similar_schools(self, city, rspo):
+        return json.dumps(city)
 
 
 '''
