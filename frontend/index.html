@@ -352,12 +352,18 @@
 
                         if (latitude != null && longitude != null) {
 
-                            if (i < 3) {
-                                marker = L.marker([latitude, longitude], { icon: star_icon(i + 1) })
-                                marker.on("click", () => showSchool(school))
-                                best_markers.addLayer(marker);
+                            if (is_sorted) {
+                                if (i < 3) {
+                                    marker = L.marker([latitude, longitude], { icon: star_icon(i + 1) })
+                                    marker.on("click", () => showSchool(school))
+                                    best_markers.addLayer(marker);
+                                } else {
+                                    marker = L.marker([latitude, longitude], { icon: normal_icon(i + 1) })
+                                    marker.on("click", () => showSchool(school))
+                                    markers.addLayer(marker);
+                                }
                             } else {
-                                marker = L.marker([latitude, longitude], {icon: normal_icon(i+1)})
+                                marker = L.marker([latitude, longitude])
                                 marker.on("click", () => showSchool(school))
                                 markers.addLayer(marker);
                             }
