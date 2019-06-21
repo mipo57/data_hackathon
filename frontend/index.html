@@ -93,7 +93,7 @@
                         <a href="#" class="brand-logo">MEGA | Szczegóły szkoły</a>
                         <ul id="nav-mobile" class="right hide-on-med-and-down">
                             <li><a class="modal-close" href="#!"><i class="material-icons">close</i>
-                            </a></li>
+                                </a></li>
                         </ul>
                     </div>
                 </div>
@@ -158,16 +158,6 @@
 
     // CONFIG CONTSANTS
     var TEXT_PROCESS_SERVER = "/process_text"
-
-    // Seraching 
-    $("#search_btn").click(() => {
-        var value = $("#searchbar").val();
-        var url = TEXT_PROCESS_SERVER + "?text=" + encodeURIComponent(value)
-
-        $.get(url, (resp) => {
-            alert(resp);
-        });
-    });
 
     // View layer buttons
     var transport_button = document.getElementById("enable_transport");
@@ -280,6 +270,27 @@
         });
     })
     marker.addTo(map).bindPopup($("#popup").html());
+
+    // Seraching 
+    $("#search_btn").click(() => {
+        var value = $("#searchbar").val();
+        var url = TEXT_PROCESS_SERVER + "?text=" + encodeURIComponent(value)
+
+        $.get(url, (resp) => {
+            resp = JSON.parse(resp);
+            if (resp.city != "") {
+                $.get("/database_api/" + encodeURIComponent(resp.city), (resp) => {
+                    resp = JSON.parse(resp)
+                    for (i = 0; i < resp.length; i++) {
+                        latitude = resp[i].LatitudeN;
+                        longitude = resp[i].LongitudeS;
+                        marker = L.marker([latitude, longitude])
+                        marker.addTo(map);
+                    }
+                });
+            }
+        });
+    });
 </script>
 
 </html>

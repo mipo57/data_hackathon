@@ -8,8 +8,6 @@ services:
     image: "mipo57/process_text"
   database_api:
     build: "./database_api"
-#    ports:
-#      - "5000:5000"
   database:
     image: "antyfilidor/hackathon:littledb"
     environment:
