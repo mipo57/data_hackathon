@@ -1,0 +1,21 @@
+version: "3"
+services:
+  frontend:
+    image: "trinitronx/python-simplehttpserver"
+    volumes:
+      - ./frontend:/var/www:ro
+  process_text:
+    image: "mipo57/process_text"
+  database_api:
+    build: "./database_api"
+#    ports:
+#      - "5000:5000"
+  database:
+    image: "antyfilidor/hackathon:littledb"
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=P@ssw0rd
+  proxy:
+    build: "./reverseproxy"
+    ports:
+      - "80:80"

@@ -1,0 +1,7 @@
+body {
+    background-image: url(images/strona_glowna_tlo.svg);
+    min-height: 100vh;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}

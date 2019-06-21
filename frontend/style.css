@@ -1,0 +1,33 @@
+
+
+.wyszukiwarka .input-field {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+#map {
+    z-index: 0;
+}
+
+#querybox {
+    text-align: center;
+}
+
+.leaflet-bottom.leaflet-right {
+    display: none;
+}
+
+.fs_container {
+    display: flex;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    z-index: 100;
+    justify-content: center;
+    align-items: flex-start
+}
+
+.hidden {
+    display: none;
+}

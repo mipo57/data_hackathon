@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Mapa</title>
+
+    <!-- Materialize -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+        integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+        crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+        integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+        crossorigin=""></script>
+
+    <!-- Jquery -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js"></script>
+
+    <!-- Star ratnig -->
+    <script src="star-rating.js"></script>
+    <link rel="stylesheet" type="text/css" href="star-rating.css">
+
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="fc_search.css" />
+    <link rel="stylesheet" href="school_view.css" />
+</head>
+
+<body>
+    <div id="map" style="width:100vw; height: 100vh"></div>
+
+    <!-- Searchbar -->
+    <div class="fs_container">
+        <div class="wyszukiwarka">
+            <i class="material-icons">school</i>
+            <div class="text-field">
+                <input id="searchbar" class="browser-default" type="text"
+                    placeholder="Jaka jest szkoła licealna we Wrocławiu?">
+                <button id="search_btn"><i class="material-icons">search</i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <ul id="slide-out" class="sidenav">
+        <li>
+            <div class="user-view">
+                <div class="background">
+                    <img src="https://materializecss.com/images/office.jpg">
+                </div>
+                <a href="#name"><span class="white-text">Ustawienia wyszukiwania</span></a>
+            </div>
+        </li>
+        <li><a href="#!"><i class="material-icons">cloud</i>First Link With Icon</a></li>
+        <li><a href="#!">Second Link</a></li>
+        <li>
+            <div class="divider"></div>
+        </li>
+        <li><a class="subheader">Subheader</a></li>
+        <li><a class="waves-effect" href="#!">Third Link With Waves</a></li>
+    </ul>
+
+    <!-- Buttons -->
+    <div class="fixed-action-btn">
+        <a class="btn-floating btn-large red">
+            <i class="large material-icons">map</i>
+        </a>
+        <ul>
+            <li><a id="enable_transport" class="btn-floating grey"><i class="material-icons">directions_bus</i></a></li>
+            <li><a id="enable_cycling" class="btn-floating grey darken-1"><i
+                        class="material-icons">directions_bike</i></a></li>
+            <!--li><a class="btn-floating green"><i class="material-icons">public</i></a></li-->
+        </ul>
+    </div>
+
+    <!-- School view -->
+    <div id="school_view" class="modal">
+        <div class="modal-content">
+            <nav>
+                <div class="nav-wrapper">
+                    <div class="container">
+                        <a href="#" class="brand-logo">MEGA | Szczegóły szkoły</a>
+                        <ul id="nav-mobile" class="right hide-on-med-and-down">
+                            <li><a class="modal-close" href="#!"><i class="material-icons">close</i>
+                            </a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+            <div class="container">
+                <div class="row">
+                    <div class="col s12 m6">
+                        <p>ul. Składowa 5, 50-209 Wrocław</p>
+                    </div>
+                    <div class="col s12 m6">
+                        <div class="school-rating"></div>
+                        <h6>Studiowałeś w tej placówce?</h6>
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="col s4 chart-container" style="position: relative">
+                        <canvas id="wykres_zdawalnosc"></canvas>
+                    </div>
+                    <div class="col s4 chart-container" style="position: relative">
+                        <canvas id="wykres_zdawalnosc1"></canvas>
+                    </div>
+                    <div class="col s4 chart-container" style="position: relative">
+                        <canvas id="wykres_zdawalnosc2"></canvas>
+                    </div>
+                    <div class="col s4 chart-container" style="position: relative">
+                        <canvas id="wykres_zdawalnosc3"></canvas>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="hidden">
+        <div id="popup">
+            69%
+        </div>
+
+    </div>
+</body>
+
+<script>
+
+</script>
+
+<script>
+    // Materialize stuff
+    document.addEventListener('DOMContentLoaded', function () {
+        var elems = document.querySelectorAll('.fixed-action-btn');
+        var instances = M.FloatingActionButton.init(elems, {});
+    });
+    document.addEventListener('DOMContentLoaded', function () {
+        var elems = document.querySelectorAll('.sidenav');
+        var instances = M.Sidenav.init(elems, {});
+    });
+    document.addEventListener('DOMContentLoaded', function () {
+        var elems = document.querySelectorAll('.modal');
+        var instances = M.Modal.init(elems, {});
+    });
+
+    // CONFIG CONTSANTS
+    var TEXT_PROCESS_SERVER = "/process_text"
+
+    // Seraching 
+    $("#search_btn").click(() => {
+        var value = $("#searchbar").val();
+        var url = TEXT_PROCESS_SERVER + "?text=" + encodeURIComponent(value)
+
+        $.get(url, (resp) => {
+            alert(resp);
+        });
+    });
+
+    // View layer buttons
+    var transport_button = document.getElementById("enable_transport");
+    var cycling_button = document.getElementById("enable_cycling");
+
+    // Map layers
+    var base_layer = L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png", {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    });
+    var transport_layer = L.tileLayer("http://www.openptmap.org/tiles/{z}/{x}/{y}.png", {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    });
+    var cycling_layer = L.tileLayer("https://tile.waymarkedtrails.org/cycling/{z}/{x}/{y}.png", {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    });
+
+    // Global state
+    var transport_enabled = false;
+    var cycling_enabled = false;
+
+
+    var map = L.map('map').setView([51.1202707, 17.0271432,], 15);
+    base_layer.addTo(map);
+
+    navigator.geolocation.getCurrentPosition((position) => {
+        var latitude = position.coords.latitude;
+        var longitude = position.coords.longitude;
+
+        map.panTo([latitude, longitude]);
+    });
+
+    // Map state buttons
+    transport_button.addEventListener("click", () => {
+        if (!transport_enabled) {
+            transport_layer.addTo(map);
+            transport_button.classList.remove("grey");
+            transport_button.classList.add("green");
+            transport_enabled = true;
+        } else {
+            map.removeLayer(transport_layer);
+            transport_button.classList.remove("green");
+            transport_button.classList.add("grey");
+            transport_enabled = false;
+        }
+    });
+    cycling_button.addEventListener("click", () => {
+        if (!cycling_enabled) {
+            cycling_layer.addTo(map);
+            cycling_button.classList.remove("grey");
+            cycling_button.classList.add("yellow");
+            cycling_enabled = true;
+        } else {
+            map.removeLayer(cycling_layer);
+            cycling_button.classList.remove("yellow");
+            cycling_button.classList.add("grey");
+            cycling_enabled = false;
+        }
+    });
+
+    // Seeding markers
+    var marker = L.marker([51.1202707, 17.0271432])
+    marker.on("click", () => {
+        M.Modal.getInstance($('.modal').get(0)).open();
+        var options = {
+            type: 'bar',
+            data: {
+                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple'],
+                datasets: [{
+                    label: 'Zdawalność matur [%]',
+                    data: [67, 70, 87, 90, 91],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(153, 102, 255,1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(255, 206, 86, 1)',
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        };
+
+        var myChart = new Chart(document.getElementById('wykres_zdawalnosc'), options);
+        var myChart = new Chart(document.getElementById('wykres_zdawalnosc1'), options);
+        var myChart = new Chart(document.getElementById('wykres_zdawalnosc2'), options);
+        var myChart = new Chart(document.getElementById('wykres_zdawalnosc3'), options);
+
+        $(".school-rating").starRating({
+            starSize: 45,
+            initialRating: 4,
+            callback: function (currentRating, $el) {
+                // make a server call here
+            }
+        });
+    })
+    marker.addTo(map).bindPopup($("#popup").html());
+</script>
+
+</html>

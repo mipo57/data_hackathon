@@ -1,0 +1,9 @@
+{
+    "version": 3,
+    "mappings": "AAAA,AAAA,MAAM,CAAC;EACH,KAAK,EAAE,KAAK;EACZ,MAAM,EAAE,KAAK;EACb,GAAG,EAAE,YAAY;EACjB,UAAU,EAAE,KAAK;EACjB,OAAO,EAAE,YAAY;CASxB;;AAdD,AAOI,MAPE,CAOF,cAAc,CAAC;EACX,OAAO,EAAE,YAAY;CACxB;;AATL,AAWI,MAXE,CAWF,GAAG,CAAC;EACA,aAAa,EAAE,IAAI;CACtB",
+    "sources": [
+        "school_view.scss"
+    ],
+    "names": [],
+    "file": "school_view.css"
+}

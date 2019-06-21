@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>MEGA</title>
+
+    <!-- Materialize -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+        integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+        crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+        integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+        crossorigin=""></script>
+
+    <!-- Jquery -->
+    <script
+    src="https://code.jquery.com/jquery-3.4.1.slim.js"
+    integrity="sha256-BTlTdQO9/fascB1drekrDVkaKd9PkwBymMlHOiG+qLI="
+    crossorigin="anonymous"></script>
+
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="fc_search.css" />
+    <link rel="stylesheet" href="strona_glowna.css" />
+
+</head>
+
+<body>
+    <!-- Searchbar -->
+    <div class="fs_container">
+        <div class="wyszukiwarka">
+            <div class="input-field col s6">
+                <i class="material-icons">cloud</i>
+                <input id="querybox" placeholder="Jaka jest szkoła licealna we Wrocławiu?" type="text">
+                <i class="material-icons">cloud</i>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+
+    // View layer buttons
+    var transport_button = document.getElementById("enable_transport");
+    var cycling_button = document.getElementById("enable_cycling");
+
+
+    // Map layers
+    var map = L.map('map').setView([51.1202707, 17.0271432,], 15);
+
+    var base_layer = L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png", {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    });
+    var transport_layer = L.tileLayer("http://www.openptmap.org/tiles/{z}/{x}/{y}.png", {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    });
+    var cycling_layer = L.tileLayer("https://tile.waymarkedtrails.org/cycling/{z}/{x}/{y}.png", {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    });
+
+    // Global state
+    var transport_enabled = false;
+    var cycling_enabled = false;
+
+    base_layer.addTo(map);
+
+    // Map state buttons
+    transport_button.addEventListener("click", () => {
+        if (!transport_enabled) {
+            transport_layer.addTo(map);
+            transport_button.classList.remove("grey");
+            transport_button.classList.add("red");
+            transport_enabled = true;
+        } else {
+            map.removeLayer(transport_layer);
+            transport_button.classList.remove("red");
+            transport_button.classList.add("grey");
+            transport_enabled = false;
+        }
+    });
+    cycling_button.addEventListener("click", () => {
+        if (!cycling_enabled) {
+            cycling_layer.addTo(map);
+            cycling_button.classList.remove("grey");
+            cycling_button.classList.add("yellow");
+            cycling_enabled = true;
+        } else {
+            map.removeLayer(cycling_layer);
+            cycling_button.classList.remove("yellow");
+            cycling_button.classList.add("grey");
+            cycling_enabled = false;
+        }
+    });
+
+    // Seeding markers
+    L.marker([51.1202707, 17.0271432]).addTo(map)
+        .bindPopup('LO3 Wrocław.')
+
+
+    // Materialize stuff
+    document.addEventListener('DOMContentLoaded', function () {
+        var elems = document.querySelectorAll('.fixed-action-btn');
+        var instances = M.FloatingActionButton.init(elems, {});
+    });
+    document.addEventListener('DOMContentLoaded', function () {
+        var elems = document.querySelectorAll('.sidenav');
+        var instances = M.Sidenav.init(elems, {});
+    });
+
+    // Full screen searchbar
+    $('.control').click(function () {
+        $('body').addClass('search-active');
+        $('.input-search').focus();
+    });
+
+    $('.icon-close').click(function () {
+        $('body').removeClass('search-active');
+    });
+</script>
+
+</html>
