@@ -1,0 +1,79 @@
+Funkcja:
+/dataset_api/getSchools
+Parametry:
+-----------
+sorted=
+- 1 (zwraca szkoły w kolejnośći według parametru sorby)
+- 0 (zwraca szkoly w losowej kolejności)
+przykład
+/dataset_api/getSorted?sorted=1&sortby=angielski
+-------------
+sortby= 
+rzecz która definiuje w jakiej kolejności szkoły. Jedna z:
+- matura (średnia z matur wszystkich albo zdawalność)
+- angielski (wyniki matur z angielskiego)
+- matemtatyka (wyniki matury z fizyki)
+- niemiecki (wyniki matury z fizyki)
+- francuski (wyniki matury z fizyki)
+- nauczyciel_na_dziecko (liczba nauczycieli przypadająca na ucznia)
+- językowy (średnie oceny z języków)
+- kryminolog (wyniki matury, według wag od Damiana)
+- administracja j.w.
+- analityka_gospodarcza j.w
+- itd (dalsze wagi od damiana)
+przykład:
+/dataset_api/getSorted?sorted=1&sortby=angielski
+-------------
+city=
+szykanie tylko w szkołach w danym mieście.
+przykład:
+/dataset_api/getSorted?city=wrocław
+-------------
+for_disabled=
+wartości:
+- 1 (zwracanie tylko szkoł które mają udogodninia dla niepełnosprawnych)
+- 0 
+jeżeli parametr nie zdefiniowany: 0
+przykład:
+/dataset_api/getSorted?sorted=1&sortby=angielski&city=wrocław&for_disabled=1
+-------------
+limit=
+maksymalna liczba szkoł jaką może zwrócić zapytanie.
+wartość domyślna: 30
+/dataset_api/getSorted?sorted=1&sortby=angielski?limit=30
+-------------
+local=
+- 1 (zwraca szkoły tylko w odległości mniejszej niż ta zdefinioawna parametrem distance)
+- 0 
+przykład:
+/dataset_api/getSorted?sorted=1&sortby=angielski&local=1&distance=3
+-------------
+distance=
+odległość w kilometrach
+przykład:
+/dataset_api/getSorted?sorted=1&sortby=angielski&local=1&distance=3
+-------------
+type=
+zwraca tylko szkoły danego typu:
+wartosci (tu zmień, bo nie wiem jakie mamy możliwości):
+- podstawówka
+- liceum
+- technikum
+
+######################################3
+
+Funkcja:
+/dataset_api/getSimilarSchools
+Funkcja ma zwracać 4 szkoły z miasta z wynikami najbliższymy do rozpatrywanej szkoły. 2 słabsze, 2 lepsze
+Jeżeli nie ma dwóch szkoł lepszych pod względem wartości od rozpatrywanej, to zwróc 3 słabsze 1 lepszą bądź 4 słabsze.
+Analogicznie w drugą stronę
+parametry:
+------
+city=
+w jakim mieście ma szkuać szkół
+---------
+id=
+numer identyfikacyjny szkoły względem której mają być zwracane wyniki
+---------
+
+
