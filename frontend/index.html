@@ -7,6 +7,9 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Mapa</title>
 
+    <!-- Font awesome -->
+    <script src="https://kit.fontawesome.com/f9fea94404.js"></script>
+
     <!-- Materialize -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -26,6 +29,10 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css
 " />
     <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+
+    <!-- Leaflet Markers -->
+    <link rel="stylesheet" href="markers/css/leaflet.extra-markers.min.css">
+    <script src="markers/js/leaflet.extra-markers.min.js"></script>
 
     <!-- Jquery -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"
@@ -112,7 +119,7 @@
                     </div>
                     <div class="col s12 m6">
                         <div class="school-rating"></div>
-                        <h6>Studiowałeś w tej placówce?</h6>
+                        <p>Uczyłeś w tej placówce?<br />Dodaj opinie!</p>
                     </div>
                 </div>
 
@@ -198,11 +205,26 @@
     var map = L.map('map').setView([51.1202707, 17.0271432,], 15);
     base_layer.addTo(map);
 
+    // Show current location
+    var has_location = false
     navigator.geolocation.getCurrentPosition((position) => {
-        var latitude = position.coords.latitude;
-        var longitude = position.coords.longitude;
+        try {
+            var latitude = position.coords.latitude;
+            var longitude = position.coords.longitude;
 
-        map.panTo([latitude, longitude]);
+            var home_icon = L.ExtraMarkers.icon({
+                icon: 'fa-home',
+                markerColor: 'violet',
+                shape: 'penta',
+                prefix: 'fa'
+            });
+
+            L.marker([latitude, longitude], { icon: home_icon }).addTo(map);
+
+            map.panTo([latitude, longitude]);
+        } catch (error) {
+            has_location = false;
+        }
     });
 
     // Map state buttons
@@ -289,33 +311,61 @@
     //marker.addTo(map).bindPopup($("#popup").html());
 
     // Seraching 
+    star_icon = (number) => L.ExtraMarkers.icon({
+        icon: 'fa-number',
+        markerColor: 'orange-dark',
+        shape: 'star',
+        number: number,
+        prefix: 'fa'
+    });
+    normal_icon = (number) => L.ExtraMarkers.icon({
+        icon: 'fa-number',
+        markerColor: 'blue',
+        shape: 'circle',
+        number: number,
+        prefix: 'fa'
+    });
+
     actual_markers = null;
+    actual_best_markers = null;
+
     $("#search_btn").click(() => {
         var value = $("#searchbar").val();
         var url = TEXT_PROCESS_SERVER + "?text=" + encodeURIComponent(value)
 
         $.get(url, (resp) => {
             resp = JSON.parse(resp);
+            let is_sorted = resp.sorted;
+
             if (resp.city != "") {
                 $.get("/database_api/" + encodeURIComponent(resp.city), (resp) => {
                     resp = JSON.parse(resp)
                     var mid_latitude = 0;
                     var mid_longitude = 0;
                     var markers = L.markerClusterGroup();
+                    var best_markers = L.layerGroup();
 
                     for (i = 0; i < resp.length; i++) {
                         let school = resp[i]
                         latitude = school.LatitudeN;
-                        longitude = school.LongitudeS;
-                        marker = L.marker([latitude, longitude])
-                        marker.on("click", () => showSchool(school))
-                        markers.addLayer(marker);
+                        longitude = school.LongitudeE;
 
-                        mid_latitude += latitude / resp.length;
-                        mid_longitude += longitude / resp.length;
+                        if (latitude != null && longitude != null) {
+
+                            if (i < 3) {
+                                marker = L.marker([latitude, longitude], { icon: star_icon(i + 1) })
+                                marker.on("click", () => showSchool(school))
+                                best_markers.addLayer(marker);
+                            } else {
+                                marker = L.marker([latitude, longitude], {icon: normal_icon(i+1)})
+                                marker.on("click", () => showSchool(school))
+                                markers.addLayer(marker);
+                            }
+
+                            mid_latitude += latitude / resp.length;
+                            mid_longitude += longitude / resp.length;
+                        }
                     }
-                    console.log(mid_latitude);
-                    console.log(mid_longitude);
 
                     if (actual_markers != null) {
                         map.removeLayer(actual_markers);
@@ -323,10 +373,19 @@
                         actual_markers = null;
                     }
 
-                    map.addLayer(markers);
-                    actual_markers = markers;
+                    if (actual_best_markers != null) {
+                        map.removeLayer(actual_best_markers);
+                        delete actual_best_markers;
+                        actual_best_markers = null;
+                    }
 
-                    // map.panTo([mid_longitude, mid_latitude]);
+                    map.addLayer(markers);
+                    map.addLayer(best_markers);
+
+                    actual_markers = markers;
+                    actual_best_markers = best_markers;
+
+                    map.panTo([mid_latitude, mid_longitude]);
                 });
             }
         });

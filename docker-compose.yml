@@ -9,7 +9,7 @@ services:
   database_api:
     build: "./database_api"
   database:
-    image: "antyfilidor/hackathon:littledb"
+    image: "antyfilidor/hackathon:improveddatabase"
     environment:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=P@ssw0rd
