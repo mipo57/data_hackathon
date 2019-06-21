@@ -21,20 +21,20 @@ def get_by_distance():
     return dh.select_schools_by_distance(float(latitudeN), float(longitudeE), float(distance))
 
 
-@app.route('/database_api/getSchools')
+@app.route('/database_api/get_schools')
 def get_schools():
-    sorted = request.args.get("sorted")
-    sort_by = request.args.get("sortby")
-    city = request.args.get("city")
-
-    where_cause = ''
-    sort_cause = ''
-
-    if sorted is 1:
-        sort_cause = 'ORDER BY '
-
-
-    return where_cause + sort_cause + "DUPA" + sorted
+    print(request.args)
+    sorted = request.args.get("sorted",default=1)
+    sortby = request.args.get("sortby",default='matura')
+    city = request.args.get("city",default='*')
+    for_disabled = request.args.get("for_disabled",default=0)
+    limit = request.args.get("limit", default=30)
+    local = request.args.get("local", default=0)
+    distance = request.args.get("distance",default = 5)
+    type = request.args.get("type",default='liceum')
+    dh = DataHandler()
+    return dh.get_schools(int(sorted), str(sortby), str(city), int(for_disabled),
+                          int(limit), int(local), int(distance), str(type))
 
 
 
