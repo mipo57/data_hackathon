@@ -11,6 +11,7 @@ def get_place(place):
     return dh.select_schools_by_place(place)
 '''
 
+
 @app.route('/database_api/getByDistance')
 def get_by_distance():
     distance = request.args.get("dist")
@@ -40,10 +41,9 @@ def get_schools():
 @app.route('/database_api/getSimilarSchools')
 def get_similar_schools():
     city = request.args.get("city")
-    id = 0
-    id = request.args.get("id")
-
-    return dh.get_similar_schools(str(city), int(id))
+    rspo = request.args.get("rspo")
+    dh = DataHandler()
+    return dh.get_similar_schools(str(city), int(rspo))
 
 
 @app.route('/database_api/getByStudTeach')
@@ -53,11 +53,13 @@ def get_by_stud_teach():
     dh = DataHandler()
     return dh.select_school_by_stud_teach_coeff(rspo, float(distance))
 
+
 @app.route('/database_api/getFullInfo')
 def select_school_by_rspo():
     rspo = request.args.get("rspo")
     dh = DataHandler()
     return dh.select_school_by_rspo(rspo)
+
 
 if __name__ == '__main__':
     app.run("0.0.0.0")

@@ -6,7 +6,11 @@ sorted=
 - 1 (zwraca szkoły w kolejnośći według parametru sorby)
 - 0 (zwraca szkoly w losowej kolejności)
 przykład
-/dataset_api/getSorted?sorted=1&sortby=angielski
+/dataset_api/getSchools?sorted=1&sortby=angielski
+
+
+
+BRAK WYNIKÓW Z MATUR
 -------------
 sortby= 
 rzecz która definiuje w jakiej kolejności szkoły. Jedna z:
@@ -22,7 +26,7 @@ rzecz która definiuje w jakiej kolejności szkoły. Jedna z:
 - analityka_gospodarcza j.w
 - itd (dalsze wagi od damiana)
 przykład:
-/dataset_api/getSorted?sorted=1&sortby=angielski
+/dataset_api/getSchools?sorted=1&sortby=angielski
 -------------
 city=
 szykanie tylko w szkołach w danym mieście.
@@ -35,23 +39,23 @@ wartości:
 - 0 
 jeżeli parametr nie zdefiniowany: 0
 przykład:
-/dataset_api/getSorted?sorted=1&sortby=angielski&city=wrocław&for_disabled=1
+/dataset_api/getSchools?sorted=1&sortby=angielski&city=wrocław&for_disabled=1
 -------------
 limit=
 maksymalna liczba szkoł jaką może zwrócić zapytanie.
 wartość domyślna: 30
-/dataset_api/getSorted?sorted=1&sortby=angielski?limit=30
+/dataset_api/getSchools?sorted=1&sortby=angielski?limit=30
 -------------
 local=
 - 1 (zwraca szkoły tylko w odległości mniejszej niż ta zdefinioawna parametrem distance)
 - 0 
 przykład:
-/dataset_api/getSorted?sorted=1&sortby=angielski&local=1&distance=3
+/dataset_api/getSchools?sorted=1&sortby=angielski&local=1&distance=3
 -------------
 distance=
 odległość w kilometrach
 przykład:
-/dataset_api/getSorted?sorted=1&sortby=angielski&local=1&distance=3
+/dataset_api/getSchools?sorted=1&sortby=angielski&local=1&distance=3
 -------------
 type=
 zwraca tylko szkoły danego typu:

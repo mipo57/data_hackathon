@@ -37,7 +37,6 @@ class DataHandler:
         return round(earth_radius * c, 3)
 
     def select_schools_by_distance(self, latidudeN, longitudeE, distance):
-
         query_skeleton = 'SELECT * FROM szkolyAdresy'
         outer_places = self._query_db(query_skeleton)
 
