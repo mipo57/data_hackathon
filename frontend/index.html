@@ -20,6 +20,13 @@
         integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
         crossorigin=""></script>
 
+    <!-- Clustering -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css
+" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css
+" />
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+
     <!-- Jquery -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"
         integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -101,7 +108,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col s12 m6">
-                        <p>ul. Składowa 5, 50-209 Wrocław</p>
+                        <p id="szkola_adres">ul. Składowa 5, 50-209 Wrocław</p>
                     </div>
                     <div class="col s12 m6">
                         <div class="school-rating"></div>
@@ -156,6 +163,16 @@
         var instances = M.Modal.init(elems, {});
     });
 
+
+    // Star rating
+    $(".school-rating").starRating({
+        starSize: 45,
+        initialRating: 0,
+        callback: function (currentRating, $el) {
+            // make a server call here
+        }
+    });
+
     // CONFIG CONTSANTS
     var TEXT_PROCESS_SERVER = "/process_text"
 
@@ -177,7 +194,6 @@
     // Global state
     var transport_enabled = false;
     var cycling_enabled = false;
-
 
     var map = L.map('map').setView([51.1202707, 17.0271432,], 15);
     base_layer.addTo(map);
@@ -218,9 +234,15 @@
     });
 
     // Seeding markers
-    var marker = L.marker([51.1202707, 17.0271432])
-    marker.on("click", () => {
+    // var marker = L.marker([51.1202707, 17.0271432])
+    showSchool = (school_info) => {
+        console.log(school_info);
         M.Modal.getInstance($('.modal').get(0)).open();
+
+        let adress = school_info['Miejscowosc'] + ", ul. " + school_info['Ulica'] + " " + school_info['NrDomu']
+
+        $('#szkola_adres').text(adress);
+
         var options = {
             type: 'bar',
             data: {
@@ -261,17 +283,13 @@
         var myChart = new Chart(document.getElementById('wykres_zdawalnosc2'), options);
         var myChart = new Chart(document.getElementById('wykres_zdawalnosc3'), options);
 
-        $(".school-rating").starRating({
-            starSize: 45,
-            initialRating: 4,
-            callback: function (currentRating, $el) {
-                // make a server call here
-            }
-        });
-    })
-    marker.addTo(map).bindPopup($("#popup").html());
+        let rating = school_info['RSPO'] % 6;
+        $(".school-rating").starRating('setRating', rating);
+    };
+    //marker.addTo(map).bindPopup($("#popup").html());
 
     // Seraching 
+    actual_markers = null;
     $("#search_btn").click(() => {
         var value = $("#searchbar").val();
         var url = TEXT_PROCESS_SERVER + "?text=" + encodeURIComponent(value)
@@ -281,12 +299,34 @@
             if (resp.city != "") {
                 $.get("/database_api/" + encodeURIComponent(resp.city), (resp) => {
                     resp = JSON.parse(resp)
+                    var mid_latitude = 0;
+                    var mid_longitude = 0;
+                    var markers = L.markerClusterGroup();
+
                     for (i = 0; i < resp.length; i++) {
-                        latitude = resp[i].LatitudeN;
-                        longitude = resp[i].LongitudeS;
+                        let school = resp[i]
+                        latitude = school.LatitudeN;
+                        longitude = school.LongitudeS;
                         marker = L.marker([latitude, longitude])
-                        marker.addTo(map);
+                        marker.on("click", () => showSchool(school))
+                        markers.addLayer(marker);
+
+                        mid_latitude += latitude / resp.length;
+                        mid_longitude += longitude / resp.length;
                     }
+                    console.log(mid_latitude);
+                    console.log(mid_longitude);
+
+                    if (actual_markers != null) {
+                        map.removeLayer(actual_markers);
+                        delete actual_markers;
+                        actual_markers = null;
+                    }
+
+                    map.addLayer(markers);
+                    actual_markers = markers;
+
+                    // map.panTo([mid_longitude, mid_latitude]);
                 });
             }
         });
