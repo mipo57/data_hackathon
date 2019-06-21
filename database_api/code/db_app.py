@@ -5,13 +5,13 @@ from db_queries import DataHandler
 app = Flask(__name__)
 
 
-@app.route('/<place>')
+@app.route('/database_api/<place>')
 def get_place(place):
     dh = DataHandler()
     return dh.select_schools_by_place(place)
 
 
-@app.route('/get_by_distance')
+@app.route('/database_api/get_by_distance')
 def get_by_distance():
     distance = request.args.get("dist")
     latitudeN = request.args.get("latN")
