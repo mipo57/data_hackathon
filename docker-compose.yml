@@ -16,4 +16,4 @@ services:
   proxy:
     build: "./reverseproxy"
     ports:
-      - "11180:80"
+      - "80:80"
