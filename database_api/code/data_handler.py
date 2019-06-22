@@ -43,7 +43,7 @@ class DataHandler:
     def get_schools(self, sorted, sortby, city, for_disabled, limit, local, distance, type, latidudeN, longitudeE):
         if local == 1:
             query_skeleton = 'SELECT RSPO, Miejscowosc,LatitudeN, LongitudeE, Ulica, NrDomu, KodPocztowy,  ' \
-                             ' Telefon, WWW, Email   FROM szkolyAdresy'
+                             ' Telefon, WWW, Email FROM szkolyAdresy'
             outer_places = self._query_db(query_skeleton)
 
             result = list()
@@ -104,22 +104,22 @@ class DataHandler:
                     ' \'' + str(res['IDPrz']) + '\' ')
                 result3 = self._query_db(query_skeleton)
                 print(res['SrWynik'])
-                df[res['RSPO']]  += res['SrWynik']# * result3[0]['Wynik']
+                df[res['RSPO']] += res['SrWynik'] * result3[0]['Wynik']
 
             df = df.sort_values(ascending=False)
             print(df.head())
-        i = 0
+            i = 0
 
-        for res in result:
-            result[i]['wynik'] = df[res['RSPO']]
-            i=i+1
+            for res in result:
+                result[i]['wynik'] = df[res['RSPO']]
+                i=i+1
 
-        print(result[0]['wynik'])
-        result.sort(key=operator.itemgetter('wynik'),reverse=True)
-        i = 0
-        for res in result:
-            result[i]['wynik'] = str(res['wynik'])
-            i=i+1
+            print(result[0]['wynik'])
+            result.sort(key=operator.itemgetter('wynik'),reverse=True)
+            i = 0
+            for res in result:
+                result[i]['wynik'] = str(res['wynik'])
+                i=i+1
         result = result[:limit]
         #print(result)
         return json.dumps(result)
