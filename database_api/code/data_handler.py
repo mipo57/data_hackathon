@@ -5,7 +5,7 @@ from math import sin, cos, sqrt, atan2, radians
 
 class DataHandler:
 
-    def __init__(self, server='database:1433', user='sa', password='P@ssw0rd', database='BetterEducation'): # zmienić na localhost
+    def __init__(self, server='localhost:1433', user='sa', password='P@ssw0rd', database='BetterEducation'): # zmienić na localhost
         self._conn = pymssql.connect(server=server, user=user, password=password, database=database)
 
     def _query_db(self, sql_query):
@@ -50,12 +50,13 @@ class DataHandler:
 
         return json.dumps(result)
 
-    def select_school_by_stud_teach_coeff(self, rspo, distance):
+    def get_similar_schools_by_stc(self, rspo, distance):
         query_skeleton = 'SELECT szkolyPlacowki.RSPO, CASE WHEN LEtatatowNauczycieli = 0 THEN 0 ELSE LUczniow /' \
                          ' LEtatatowNauczycieli END \'StosunekUczNaucz\', LongitudeE, LatitudeN FROM szkolyPlacowki' \
                          ' INNER JOIN szkolyAdresy sA on szkolyPlacowki.RSPO = sA.RSPO WHERE szkolyPlacowki.RSPO '
         other_schools = self._query_db(query_skeleton + ' <> ' + rspo)
         my_school = self._query_db(query_skeleton + ' = ' + rspo)
+
 
         better_1 = my_school[0]
         better_2 = my_school[0]
@@ -63,24 +64,36 @@ class DataHandler:
         worse_1 = my_school[0]
         worse_2 = my_school[0]
 
+        better_1_val = 1000  # magic start value -> synthetic, unreal big exam result
+        better_2_val = 1000  # magic start value -> synthetic, unreal big exam result
+
+        worse_1_val = -1000  # magic start value -> synthetic, unreal low exam result
+        worse_2_val = -1000  # magic start value -> synthetic, unreal low exam result
+
         for record in other_schools:
             record_distance = self._get_distance(float(record['LatitudeN']), float(record['LongitudeE']),
                                                  float(my_school[0]['LatitudeN']), float(my_school[0]['LongitudeE']))
             if record_distance <= distance:
                 if float(record['StosunekUczNaucz']) > float(my_school[0]['StosunekUczNaucz']):
-                    if float(record['StosunekUczNaucz']) > float(better_2['StosunekUczNaucz']):
-                        if record['StosunekUczNaucz'] > float(better_1['StosunekUczNaucz']):
+                    if float(record['StosunekUczNaucz']) < better_2_val:
+                        if record['StosunekUczNaucz'] < better_1_val:
                             better_2 = better_1
+                            better_2_val = float(better_1['StosunekUczNaucz'])
                             better_1 = record
+                            better_1_val = float(record['StosunekUczNaucz'])
                         else:
                             better_2 = record
+                            better_2_val = float(record['StosunekUczNaucz'])
                 else:
-                    if float(record['StosunekUczNaucz']) < float(worse_2['StosunekUczNaucz']):
-                        if float(record['StosunekUczNaucz']) < float(worse_1['StosunekUczNaucz']):
+                    if float(record['StosunekUczNaucz']) > worse_2_val:
+                        if float(record['StosunekUczNaucz']) > worse_1_val:
                             worse_2 = worse_1
+                            worse_2_val = float(worse_1['StosunekUczNaucz'])
                             worse_1 = record
+                            worse_1_val = float(record['StosunekUczNaucz'])
                         else:
                             worse_2 = record
+                            worse_2_val = float(record['StosunekUczNaucz'])
 
         return json.dumps([worse_1, worse_2, my_school, better_2, better_1])
 
@@ -95,7 +108,7 @@ class DataHandler:
 
         return json.dumps([my_school, my_info])
 
-    def get_similar_schools(self, rspo, distance):
+    def get_similar_schools_by_test(self, rspo, distance):
         query_skeleton = 'SELECT AVG(SrWynik) \'Sr\', wynikiMatur.RSPO, Nazwa, LongitudeE, LatitudeN FROM wynikiMatur ' \
                          'INNER JOIN szkolyAdresy sA on wynikiMatur.RSPO = sA.RSPO ' \
                          'INNER JOIN szkolyPlacowki sP on sA.RSPO = sP.RSPO WHERE wynikiMatur.RSPO <> {} ' \
@@ -108,6 +121,13 @@ class DataHandler:
                          'GROUP BY wynikiMatur.RSPO, LongitudeE, LatitudeN, Nazwa'.format(rspo)
 
         my_school = self._query_db(query_skeleton)
+
+        if len(my_school) == 0:
+            query_skeleton = 'SELECT 0 \'Sr\', sA.RSPO, Nazwa, LongitudeE, LatitudeN FROM szkolyAdresy sA INNER JOIN ' \
+                             'szkolyPlacowki sP on sA.RSPO = sP.RSPO WHERE sA.RSPO = {}'.format(rspo)
+
+            my_school = self._query_db(query_skeleton)
+            my_school[0]['Sr'] = str((int(rspo) % 8) * 10)
 
         better_1 = my_school[0]
         better_2 = my_school[0]

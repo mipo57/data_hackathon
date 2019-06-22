@@ -43,7 +43,7 @@ def get_similar_schools():
     distance = request.args.get("dist")
     rspo = request.args.get("rspo")
     dh = DataHandler()
-    return dh.get_similar_schools(rspo, float(distance))
+    return dh.get_similar_schools_by_test(rspo, float(distance))
 
 
 @app.route('/database_api/getByStudTeach')
@@ -51,7 +51,7 @@ def get_by_stud_teach():
     rspo = request.args.get("rspo")
     distance = request.args.get("dist")
     dh = DataHandler()
-    return dh.select_school_by_stud_teach_coeff(rspo, float(distance))
+    return dh.get_similar_schools_by_stc(rspo, float(distance))
 
 
 @app.route('/database_api/getFullInfo')
