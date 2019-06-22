@@ -67,7 +67,7 @@ wartosci (tu zmień, bo nie wiem jakie mamy możliwości):
 ######################################3
 
 Funkcja:
-/dataset_api/getSimilarSchools
+/dataset_api/getSimilarSchoolsa
 Funkcja ma zwracać 4 szkoły z miasta z wynikami najbliższymy do rozpatrywanej szkoły. 2 słabsze, 2 lepsze
 Jeżeli nie ma dwóch szkoł lepszych pod względem wartości od rozpatrywanej, to zwróc 3 słabsze 1 lepszą bądź 4 słabsze.
 Analogicznie w drugą stronę

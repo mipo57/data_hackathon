@@ -40,10 +40,10 @@ def get_schools():
 
 @app.route('/database_api/getSimilarSchools')
 def get_similar_schools():
-    city = request.args.get("city")
+    distance = request.args.get("dist")
     rspo = request.args.get("rspo")
     dh = DataHandler()
-    return dh.get_similar_schools(str(city), int(rspo))
+    return dh.get_similar_schools(rspo, float(distance))
 
 
 @app.route('/database_api/getByStudTeach')

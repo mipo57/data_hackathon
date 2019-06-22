@@ -95,8 +95,56 @@ class DataHandler:
 
         return json.dumps([my_school, my_info])
 
-    def get_similar_schools(self, city, rspo):
-        return json.dumps(city)
+    def get_similar_schools(self, rspo, distance):
+        query_skeleton = 'SELECT AVG(SrWynik) \'Sr\', wynikiMatur.RSPO, LongitudeE, LatitudeN FROM wynikiMatur INNER ' \
+                         'JOIN szkolyAdresy sA on wynikiMatur.RSPO = sA.RSPO WHERE wynikiMatur.RSPO <> {} GROUP BY' \
+                         ' wynikiMatur.RSPO, LongitudeE, LatitudeN'.format(rspo)
+        other_schools = self._query_db(query_skeleton)
+
+        query_skeleton = 'SELECT AVG(SrWynik) \'Sr\', wynikiMatur.RSPO, LongitudeE, LatitudeN FROM wynikiMatur INNER ' \
+                         'JOIN szkolyAdresy sA on wynikiMatur.RSPO = sA.RSPO WHERE wynikiMatur.RSPO = {} GROUP BY' \
+                         ' wynikiMatur.RSPO, LongitudeE, LatitudeN'.format(rspo)
+
+        my_school = self._query_db(query_skeleton)
+
+        better_1 = my_school[0]
+        better_2 = my_school[0]
+
+        worse_1 = my_school[0]
+        worse_2 = my_school[0]
+
+        better_1_val = 1000  # magic start value -> synthetic, unreal big exam result
+        better_2_val = 1000  # magic start value -> synthetic, unreal big exam result
+
+        worse_1_val = -1000  # magic start value -> synthetic, unreal low exam result
+        worse_2_val = -1000  # magic start value -> synthetic, unreal low exam result
+
+        for record in other_schools:
+            record_distance = self._get_distance(float(record['LatitudeN']), float(record['LongitudeE']),
+                                                 float(my_school[0]['LatitudeN']), float(my_school[0]['LongitudeE']))
+            if record_distance <= distance:
+                if float(record['Sr']) > float(my_school[0]['Sr']):
+                    if float(record['Sr']) < better_2_val:
+                        if record['Sr'] < better_1_val:
+                            better_2 = better_1
+                            better_2_val = float(better_1['Sr'])
+                            better_1 = record
+                            better_1_val = float(record['Sr'])
+                        else:
+                            better_2 = record
+                            better_2_val = float(record['Sr'])
+                else:
+                    if float(record['Sr']) > worse_2_val:
+                        if float(record['Sr']) > worse_1_val:
+                            worse_2 = worse_1
+                            worse_2_val = float(worse_1['Sr'])
+                            worse_1 = record
+                            worse_1_val = float(record['Sr'])
+                        else:
+                            worse_2 = record
+                            worse_2_val = float(record['Sr'])
+
+        return json.dumps([worse_1, worse_2, my_school, better_2, better_1])
 
 
 '''
