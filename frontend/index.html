@@ -112,6 +112,11 @@
                 <canvas id="wykres_koedukacja"></canvas>
             </div>
         </li>
+        <li>
+            <div class="chart-container" style="position: relative">
+                <canvas id="wykres_wyniki_matur"></canvas>
+            </div>
+        </li>
         <!--
         <li><a href="#!"><i class="material-icons">cloud</i>First Link With Icon</a></li>
         <li><a href="#!">Second Link</a></li>
@@ -315,8 +320,40 @@
             }
         });
 
-
-
+        $.get("database_api/getByStudTeach?dist=10&rspo=" + school_info['RSPO'], (result) => {
+            result = JSON.parse(result);
+            console.log(result);
+            wyniki_matur = {
+                labels: ["s1", "s1", "s1", "s1", "s1"],
+                datasets: [{
+                    data: [12, 19, 3, 5, 2],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            }
+            var myBarChart = new Chart($("#wykres_wyniki_matur"), {
+                type: 'bar',
+                data: wyniki_matur,
+                options: {
+                    legend: {
+                        display: false
+                    }
+                }
+            });
+        })
 
         // Ocena szkoły
         let rating = school_info['RSPO'] % 6;
