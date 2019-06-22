@@ -96,14 +96,16 @@ class DataHandler:
         return json.dumps([my_school, my_info])
 
     def get_similar_schools(self, rspo, distance):
-        query_skeleton = 'SELECT AVG(SrWynik) \'Sr\', wynikiMatur.RSPO, LongitudeE, LatitudeN FROM wynikiMatur INNER ' \
-                         'JOIN szkolyAdresy sA on wynikiMatur.RSPO = sA.RSPO WHERE wynikiMatur.RSPO <> {} GROUP BY' \
-                         ' wynikiMatur.RSPO, LongitudeE, LatitudeN'.format(rspo)
+        query_skeleton = 'SELECT AVG(SrWynik) \'Sr\', wynikiMatur.RSPO, Nazwa, LongitudeE, LatitudeN FROM wynikiMatur ' \
+                         'INNER JOIN szkolyAdresy sA on wynikiMatur.RSPO = sA.RSPO ' \
+                         'INNER JOIN szkolyPlacowki sP on sA.RSPO = sP.RSPO WHERE wynikiMatur.RSPO <> {} ' \
+                         'GROUP BY wynikiMatur.RSPO, LongitudeE, LatitudeN, Nazwa'.format(rspo)
         other_schools = self._query_db(query_skeleton)
 
-        query_skeleton = 'SELECT AVG(SrWynik) \'Sr\', wynikiMatur.RSPO, LongitudeE, LatitudeN FROM wynikiMatur INNER ' \
-                         'JOIN szkolyAdresy sA on wynikiMatur.RSPO = sA.RSPO WHERE wynikiMatur.RSPO = {} GROUP BY' \
-                         ' wynikiMatur.RSPO, LongitudeE, LatitudeN'.format(rspo)
+        query_skeleton = 'SELECT AVG(SrWynik) \'Sr\', wynikiMatur.RSPO, Nazwa, LongitudeE, LatitudeN FROM wynikiMatur ' \
+                         'INNER JOIN szkolyAdresy sA on wynikiMatur.RSPO = sA.RSPO ' \
+                         'INNER JOIN szkolyPlacowki sP on sA.RSPO = sP.RSPO WHERE wynikiMatur.RSPO = {} ' \
+                         'GROUP BY wynikiMatur.RSPO, LongitudeE, LatitudeN, Nazwa'.format(rspo)
 
         my_school = self._query_db(query_skeleton)
 
