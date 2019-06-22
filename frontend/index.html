@@ -57,7 +57,7 @@
     <!-- Searchbar -->
     <div class="fs_container">
         <div class="wyszukiwarka">
-            <img src="images/logo_search.png" class="search-logo"/>
+            <img src="images/logo_search.png" class="search-logo" />
             <div class="text-field">
                 <input id="searchbar" class="browser-default" type="text"
                     placeholder="Jaka jest najlepsza szkoła licealna we Wrocławiu?">
@@ -86,7 +86,7 @@
                 <img class="logo" src="images/logo_white.png" alt="">
             </div>
         </nav>
-        <h3 class="school-name">Liceum ogólnokształcące nr. 3</h3>
+        <h3 id="szkola-nazwa" class="school-name">Liceum ogólnokształcące nr. 3</h3>
         <div class="school-rating"></div>
 
         <ul class="collection">
@@ -105,6 +105,11 @@
         <li>
             <div class="chart-container" style="position: relative">
                 <canvas id="wykres_matury"></canvas>
+            </div>
+        </li>
+        <li>
+            <div class="chart-container" style="position: relative">
+                <canvas id="wykres_koedukacja"></canvas>
             </div>
         </li>
         <!--
@@ -235,39 +240,85 @@
         console.log(school_info);
         //M.Modal.getInstance($('.modal').get(0)).open();
         M.Sidenav.getInstance($('#school_view').get(0)).open();
-        console.log(school_info)
 
         // adress
         let adress_ln1 = "ul. " + school_info['Ulica'] + " " + school_info['NrDomu']
         let adress_ln2 = school_info["KodPocztowy"] + " " + school_info['Miejscowosc'];
         $('#szkola_adres').html(adress_ln1 + "<br/>" + adress_ln2);
 
-        // concact info
+        // contacct info
         let phone = school_info['Telefon'];
         let www = school_info['WWW'];
         let mail = school_info['Email'];
         $('#szkola_kontakt').html(phone + "<br/>" + mail + "<br/>" + www);
 
-        dane_maturalne = {
-            labels: ['Matematyka', 'Fizyka', 'Chemia', 'Angielski', 'Niemiecki'],
-                datasets: [{
-                    data: [20, 10, 4, 2, 15],
-                    label: "Profil szkoły",
-                    backgroundColor: "rgba(52, 152, 219,0.5)",
-                    borderColor: "rgba(52, 152, 219,1.0"
-                }]
-        }
+        $.get("/database_api/getFullInfo?rspo=" + school_info['RSPO'], (result) => {
+            result = JSON.parse(result)
+            console.log(result)
 
-        var myRadarChart = new Chart($("#wykres_matury"), {
-            type: 'radar',
-            data: dane_maturalne,
-            options: {
-                legend: {
-                    display: false
+            $('#szkola-nazwa').html(result[0][0]['Nazwa']);
+
+            if (result.length > 1 && result[1].length > 0) {
+                polski = result[1][3]['SrWynik'];
+                matematyka = result[1][4]['SrWynik'];
+                angielski = result[1][5]['SrWynik'];
+                chemia = result[1][7]['SrWynik'];
+                fizyka = result[1][8]['SrWynik'];
+                informatyka = result[1][11]['SrWynik'];
+
+                // Wykres wyników z matury
+                dane_maturalne = {
+                    labels: ['Polski', 'Matematyka', 'Angielski', 'Chemia', 'Fizyka', 'Informatyka'],
+                    datasets: [{
+                        data: [polski, matematyka, angielski, chemia, fizyka, informatyka],
+                        label: "Profil szkoły",
+                        backgroundColor: "rgba(52, 152, 219,0.5)",
+                        borderColor: "rgba(52, 152, 219,1.0"
+                    }]
                 }
+                var myRadarChart = new Chart($("#wykres_matury"), {
+                    type: 'radar',
+                    data: dane_maturalne,
+                    options: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                });
+            }
+
+            dziewczyny = result[0][0]['LDziewczat']
+            chlopaki = result[0][0]['LUczniow'] - dziewczyny
+
+            if (chlopaki > 0 || dziewczyny > 0) {
+                // Wykres koedukacyjny
+                koedukacja = {
+                    datasets: [{
+                        data: [chlopaki, dziewczyny],
+                        backgroundColor: [
+                            "#0984e3",
+                            "#fd79a8"
+                        ],
+                    }],
+
+                    // These labels appear in the legend and in the tooltips when hovering different arcs
+                    labels: [
+                        'Chłopaki',
+                        'Dziewczyny',
+                    ]
+                };
+                var myDoughnutChart = new Chart($("#wykres_koedukacja"), {
+                    type: 'doughnut',
+                    data: koedukacja,
+                    options: {}
+                });
             }
         });
 
+
+
+
+        // Ocena szkoły
         let rating = school_info['RSPO'] % 6;
         $(".school-rating").starRating('setRating', rating);
     };
