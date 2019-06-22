@@ -65,18 +65,33 @@ class DataHandler:
             list_of_rspos = list()
             for res in result:
                 list_of_rspos.append(res['RSPO'])
-            query_skeleton = 'SELECT * FROM szkolyPlacowki WHERE RSPO IN '+ str(tuple(list_of_rspos)) + \
+            query_skeleton = 'SELECT RSPO FROM szkolyPlacowki WHERE RSPO IN '+ str(tuple(list_of_rspos)) + \
                              'AND CzyDlaInwalidow = 1'
+            result1 = self._query_db(query_skeleton)
+            list_of_rspos = list()
+            for res in result1:
+                list_of_rspos.append(res['RSPO'])
+
+            query_skeleton = 'SELECT RSPO, Miejscowosc,LatitudeN, LongitudeE, Ulica, NrDomu, KodPocztowy,  ' \
+                             ' Telefon, WWW, Email FROM szkolyAdresy/ WHERE RSPO IN ' + str(tuple(list_of_rspos))
+
             result = self._query_db(query_skeleton)
 
         if type !='nie':
             list_of_rspos = list()
             for res in result:
                 list_of_rspos.append(res['RSPO'])
-            query_skeleton = 'SELECT * FROM szkolyPlacowki WHERE RSPO IN '+ str(tuple(list_of_rspos)) + \
-                             'AND Typ = ' + type + ' '
-            result = self._query_db(query_skeleton)
+            query_skeleton = 'SELECT RSPO FROM / WHERE RSPO IN '+ str(tuple(list_of_rspos)) + \
+                             'AND Typ = ' + str(' \''+ type + '\' ')+' '
+            result1 = self._query_db(query_skeleton)
+            list_of_rspos = list()
+            for res in result1:
+                list_of_rspos.append(res['RSPO'])
 
+            query_skeleton = 'SELECT RSPO, Miejscowosc,LatitudeN, LongitudeE, Ulica, NrDomu, KodPocztowy,  ' \
+                             ' Telefon, WWW, Email FROM szkolyAdresy WHERE RSPO IN ' + str(tuple(list_of_rspos))
+
+            result = self._query_db(query_skeleton)
         if sorted == 1:
             list_of_rspos = list()
             for res in result:
@@ -120,6 +135,7 @@ class DataHandler:
             for res in result:
                 result[i]['wynik'] = str(res['wynik'])
                 i=i+1
+
         result = result[:limit]
         #print(result)
         return json.dumps(result)
@@ -145,7 +161,6 @@ class DataHandler:
         other_schools = self._query_db(query_skeleton + ' <> ' + rspo)
         my_school = self._query_db(query_skeleton + ' = ' + rspo)
 
-
         better_1 = my_school[0]
         better_2 = my_school[0]
 
@@ -159,9 +174,11 @@ class DataHandler:
         worse_2_val = -1000  # magic start value -> synthetic, unreal low exam result
 
         for record in other_schools:
+            print(record['StosunekUczNaucz'])
             record_distance = self._get_distance(float(record['LatitudeN']), float(record['LongitudeE']),
                                                  float(my_school[0]['LatitudeN']), float(my_school[0]['LongitudeE']))
             if record_distance <= distance:
+
                 if float(record['StosunekUczNaucz']) > float(my_school[0]['StosunekUczNaucz']):
                     if float(record['StosunekUczNaucz']) < better_2_val:
                         if record['StosunekUczNaucz'] < better_1_val:
