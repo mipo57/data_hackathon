@@ -73,4 +73,6 @@ if __name__ == '__main__':
 EXAMPLE OF USE
 http://127.0.0.1:5000/database_api/getByDistance?dist=5&latN=51.504455&lonE=18.125713
 http://127.0.0.1:5000/database_api/Kalisz
+/database_api/getSimilarSchools?rspo=26796&dist=50
+/database_api/getByStudTeach?rspo=26796&dist=50
 """
