@@ -1,5 +1,8 @@
 import pymssql
 import json
+import pandas as pd
+import operator
+
 from math import sin, cos, sqrt, atan2, radians
 
 
@@ -35,6 +38,90 @@ class DataHandler:
         a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
         c = 2 * atan2(sqrt(a), sqrt(1 - a))
         return round(earth_radius * c, 3)
+
+    def get_schools(self, sorted, sortby, city, for_disabled, limit, local, distance, type, latidudeN, longitudeE):
+        if local == 1:
+            query_skeleton = 'SELECT RSPO, Miejscowosc,LatitudeN, LongitudeE, Ulica, NrDomu, KodPocztowy,  ' \
+                             ' Telefon, WWW, Email   FROM szkolyAdresy'
+            outer_places = self._query_db(query_skeleton)
+
+            result = list()
+            for record in outer_places:
+                record_distance = self._get_distance(float(record['LatitudeN']), float(record['LongitudeE']),
+                                                     float(latidudeN), float(longitudeE))
+                # print('{:7} {:7} {:7}\n'.format(record['RSPO'], center_place[0]['RSPO'], record_distance))
+                if record_distance < distance:
+                    result.append(record)
+
+            return json.dumps(result)
+        else:
+            query_skeleton = 'SELECT RSPO, Miejscowosc,LatitudeN, LongitudeE, Ulica, NrDomu, KodPocztowy,  ' \
+                             ' Telefon, WWW, Email FROM szkolyAdresy WHERE Miejscowosc = '
+            city = '\'' + city + '\''
+            result = self._query_db(query_skeleton + city)
+
+        if for_disabled ==1:
+            list_of_rspos = list()
+            for res in result:
+                list_of_rspos.append(res['RSPO'])
+            query_skeleton = 'SELECT * FROM szkolyPlacowki WHERE RSPO IN '+ str(tuple(list_of_rspos)) + \
+                             'AND CzyDlaInwalidow = 1'
+            result = self._query_db(query_skeleton)
+
+        if type !='nie':
+            list_of_rspos = list()
+            for res in result:
+                list_of_rspos.append(res['RSPO'])
+            query_skeleton = 'SELECT * FROM szkolyPlacowki WHERE RSPO IN '+ str(tuple(list_of_rspos)) + \
+                             'AND Typ = ' + type + ' '
+            result = self._query_db(query_skeleton)
+
+        if sorted == 1:
+            list_of_rspos = list()
+            for res in result:
+                list_of_rspos.append(res['RSPO'])
+            df = pd.DataFrame(list_of_rspos)
+            df['wynik'] = 0
+            df.index = list_of_rspos
+            df = df['wynik']
+            #print(df)
+            query_skeleton = 'SELECT RSPO, SrWynik, IDPrz FROM wynikiMatur WHERE RSPO IN '+ str(tuple(list_of_rspos)) +''
+            results = self._query_db(query_skeleton)
+
+            query_skeleton = 'SELECT IDKier FROM kierunkiStudiow WHERE NazwaKier = ' + str(' \''+ sortby + '\' ' ) +' '
+            result2 = self._query_db(query_skeleton)
+            #print(result2[0]['IDKier'])
+            #print(result)
+
+            #query_skeleton = 'SELECT * FROM prerekwizytyStudia WHERE Wynik > 0'
+            #result3 = self._query_db(query_skeleton)
+            #print(result3)
+
+            for res in results:
+                query_skeleton = 'SELECT * FROM prerekwizytyStudia WHERE IDKier = ' + \
+                                 str(' \'' + str(result2[0]['IDKier']) + '\' ') + 'AND  IDPrz = ' + str(
+                    ' \'' + str(res['IDPrz']) + '\' ')
+                result3 = self._query_db(query_skeleton)
+                print(res['SrWynik'])
+                df[res['RSPO']]  += res['SrWynik']# * result3[0]['Wynik']
+
+            df = df.sort_values(ascending=False)
+            print(df.head())
+        i = 0
+
+        for res in result:
+            result[i]['wynik'] = df[res['RSPO']]
+            i=i+1
+
+        print(result[0]['wynik'])
+        result.sort(key=operator.itemgetter('wynik'),reverse=True)
+        i = 0
+        for res in result:
+            result[i]['wynik'] = str(res['wynik'])
+            i=i+1
+        result = result[:limit]
+        print(result)
+        return json.dumps(result)
 
     def select_schools_by_distance(self, latidudeN, longitudeE, distance):
         query_skeleton = 'SELECT * FROM szkolyAdresy'

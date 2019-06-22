@@ -156,6 +156,7 @@ class DataHandler:
                                  str(' \'' + str(result2[0]['IDKier']) + '\' ') + 'AND  IDPrz = ' + str(
                     ' \'' + str(res['IDPrz']) + '\' ')
                 result3 = self._query_db(query_skeleton)
+                print(result3[0]['Wynik'])
                 df[res['RSPO']]  += res['SrWynik'] * result3[0]['Wynik']
 
             df = df.sort_values()
