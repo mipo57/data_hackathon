@@ -86,7 +86,7 @@
                 <div class="nav-wrapper">
                     <img class="logo" src="images/logo_white.png" alt="">
                     <ul id="nav-mobile" class="right hide-on-med-and-down" style="margin-left:auto;">
-                        <li><a href="sass.html">X</a></li>
+                        <li><a href="#!" class="modal-close">X</a></li>
                     </ul>
                 </div>
             </div>
@@ -95,35 +95,43 @@
         <div class="container">
             <h3 id="szkola-nazwa" class="school-name">Liceum ogólnokształcące nr. 3</h3>
             <div class="school-rating"></div>
-
-            <ul class="collection">
-                <li class="collection-item avatar">
-                    <i class="material-icons circle">map</i>
-                    <span class="title">Lokalizacja</span>
-                    <p id="szkola_adres">
-                    </p>
-                </li>
-                <li class="collection-item avatar">
-                    <i class="material-icons circle">contact_phone</i>
-                    <span class="title">Dane kontaktowe</span>
-                    <p id="szkola_kontakt"></p>
-                </li>
-            </ul>
-            <li>
-                <div class="chart-container" style="position: relative">
-                    <canvas id="wykres_matury"></canvas>
+            <div class="row">
+                <div class="col s6">
+                    <ul class="collection">
+                        <li class="collection-item avatar">
+                            <i class="material-icons circle">map</i>
+                            <span class="title">Lokalizacja</span>
+                            <p id="szkola_adres">
+                            </p>
+                        </li>
+                        <li class="collection-item avatar">
+                            <i class="material-icons circle">contact_phone</i>
+                            <span class="title">Dane kontaktowe</span>
+                            <p id="szkola_kontakt"></p>
+                        </li>
+                    </ul>
                 </div>
-            </li>
-            <li>
-                <div class="chart-container" style="position: relative">
-                    <canvas id="wykres_koedukacja"></canvas>
+            </div>
+            <div class="row">
+                <div class="col s4">
+                    <p class="desc">Profil szkoły</p>
+                    <div class="chart-container" style="position: relative">
+                        <canvas id="wykres_matury"></canvas>
+                    </div>
                 </div>
-            </li>
-            <li>
-                <div class="chart-container" style="position: relative">
-                    <canvas id="wykres_wyniki_matur"></canvas>
+                <div class="col s4">
+                    <p class="desc">Koedukacyjność</p>
+                    <div class="chart-container" style="position: relative">
+                        <canvas id="wykres_koedukacja"></canvas>
+                    </div>
                 </div>
-            </li>
+                <div class="col s4">
+                    <p class="desc">Na tle miasta</p>
+                    <div class="chart-container" style="position: relative">
+                        <canvas id="wykres_wyniki_matur"></canvas>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!--
@@ -250,6 +258,12 @@
 
     // Seeding markers
     // var marker = L.marker([51.1202707, 17.0271432])
+
+
+    // Showing school screen
+    var profile_chart = null;
+    var coeducation_chart = null;
+    var comparison_chart = null;
     showSchool = (school_info) => {
         console.log(school_info);
         //M.Modal.getInstance($('.modal').get(0)).open();
@@ -280,6 +294,19 @@
                 fizyka = result[1][8]['SrWynik'];
                 informatyka = result[1][11]['SrWynik'];
 
+                if (coeducation_chart != null) {
+                    coeducation_chart.destroy();
+                    coeducation_chart = null;
+                }
+                if (comparison_chart != null) {
+                    comparison_chart.destroy();
+                    comparison_chart = null;
+                }
+                if (profile_chart != null) {
+                    profile_chart.destroy();
+                    profile_chart = null;
+                }
+
                 // Wykres wyników z matury
                 dane_maturalne = {
                     labels: ['Polski', 'Matematyka', 'Angielski', 'Chemia', 'Fizyka', 'Informatyka'],
@@ -290,7 +317,7 @@
                         borderColor: "rgba(52, 152, 219,1.0"
                     }]
                 }
-                var myRadarChart = new Chart($("#wykres_matury"), {
+                profile_chart = new Chart($("#wykres_matury"), {
                     type: 'radar',
                     data: dane_maturalne,
                     options: {
@@ -321,7 +348,7 @@
                         'Dziewczyny',
                     ]
                 };
-                var myDoughnutChart = new Chart($("#wykres_koedukacja"), {
+                coeducation_chart = new Chart($("#wykres_koedukacja"), {
                     type: 'doughnut',
                     data: koedukacja,
                     options: {}
@@ -332,10 +359,23 @@
         $.get("database_api/getSimilarSchools?dist=10&rspo=" + school_info['RSPO'], (result) => {
             result = JSON.parse(result);
             console.log(result);
+
+            szkola_1_nazwa = result[0]['Nazwa']
+            szkola_2_nazwa = result[1]['Nazwa']
+            szkola_3_nazwa = result[2][0]['Nazwa']
+            szkola_4_nazwa = result[3]['Nazwa']
+            szkola_5_nazwa = result[4]['Nazwa']
+
+            szkola_1_wartosc = result[0]['Sr']
+            szkola_2_wartosc = result[1]['Sr']
+            szkola_3_wartosc = result[2][0]['Sr']
+            szkola_4_wartosc = result[3]['Sr']
+            szkola_5_wartosc = result[4]['Sr']
+
             wyniki_matur = {
-                labels: ["s1", "s1", "s1", "s1", "s1"],
+                labels: [szkola_1_nazwa, szkola_2_nazwa, szkola_3_nazwa, szkola_4_nazwa, szkola_5_nazwa],
                 datasets: [{
-                    data: [12, 19, 3, 5, 2],
+                    data: [szkola_1_wartosc, szkola_2_wartosc, szkola_3_wartosc, szkola_4_wartosc, szkola_5_wartosc],
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',
                         'rgba(54, 162, 235, 0.2)',
@@ -353,7 +393,7 @@
                     borderWidth: 1
                 }]
             }
-            var myBarChart = new Chart($("#wykres_wyniki_matur"), {
+            comparison_chart = new Chart($("#wykres_wyniki_matur"), {
                 type: 'bar',
                 data: wyniki_matur,
                 options: {
@@ -397,8 +437,33 @@
             resp = JSON.parse(resp);
             let is_sorted = resp.sorted;
 
+            query = "/database_api/get_schools?limit=800";
+
+            console.log(resp);
+
+            if (resp.city!="") {
+                query += "&city=" + resp.city;
+            }
+            if (resp.for_disabled) {
+                query += "&for_disabled=1";
+            }
+            if (resp.sorted) {
+                query += "&sorted=1"
+
+                if (resp.criteria == "") {
+                    resp.criteria = "matematyka"
+                }
+            } else {
+                query += "&sorted=0";
+            }
+            if (resp.criteria != "") {
+                query += "&sortby=" + resp.criteria;
+            }
+
+            console.log(query);
+
             if (resp.city != "") {
-                $.get("/database_api/" + encodeURIComponent(resp.city), (resp) => {
+                $.get(query, (resp) => {
                     resp = JSON.parse(resp)
                     var mid_latitude = 0;
                     var mid_longitude = 0;

@@ -47,9 +47,18 @@
 
 #school_view .collection {
   border: none;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
 }
 
 #school_view .collection .collection-item {
+  margin-right: 20px;
   border: none;
+}
+
+#school_view .desc {
+  text-align: center;
+  font-size: 1.5rem;
 }
 /*# sourceMappingURL=school_view.css.map */

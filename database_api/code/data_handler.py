@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import pymssql
 import json
 import pandas as pd
@@ -120,7 +121,7 @@ class DataHandler:
             result[i]['wynik'] = str(res['wynik'])
             i=i+1
         result = result[:limit]
-        print(result)
+        #print(result)
         return json.dumps(result)
 
     def select_schools_by_distance(self, latidudeN, longitudeE, distance):

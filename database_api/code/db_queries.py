@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import pymssql
 import json
 import pandas as pd
@@ -8,7 +9,7 @@ from math import sin, cos, sqrt, atan2, radians
 
 class DataHandler:
 
-    def __init__(self, server='localhost:1433', user='sa', password='P@ssw0rd', database='BetterEducation'): # zmienić na localhost
+    def __init__(self, server='database:1433', user='sa', password='P@ssw0rd', database='BetterEducation'): # zmienić na localhost
         self._conn = pymssql.connect(server=server, user=user, password=password, database=database)
 
     def _query_db(self, sql_query):
