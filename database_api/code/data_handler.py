@@ -110,6 +110,8 @@ class DataHandler:
             query_skeleton = 'SELECT RSPO, SrWynik, IDPrz FROM wynikiMatur WHERE RSPO IN '+ str(tuple(list_of_rspos)) +''
             results = self._query_db(query_skeleton)
 
+            '''
+            
             query_skeleton = 'SELECT IDKier FROM kierunkiStudiow WHERE NazwaKier = ' + str(' \''+ sortby + '\' ' ) +' '
             result2 = self._query_db(query_skeleton)
             #print(result2[0]['IDKier'])
@@ -129,6 +131,19 @@ class DataHandler:
                 print(result3)
                 new = float(result3[0]['Waga'].replace(',','.'))
                 df[res['RSPO']] += float(res['SrWynik']) * new
+            '''
+            query_skeleton = 'SELECT IDKier FROM kierunkiStudiow WHERE NazwaKier = ' + str(' \'' + sortby + '\' ') + ' '
+            result2 = self._query_db(query_skeleton)
+
+            for res in results:
+                query_skeleton = 'SELECT * FROM prerekwizytyStudia2 WHERE IDKier = ' + str(' \'' + sortby + '\' ') + \
+                                 'AND  IDPrz = ' + str(' \'' + str(res['IDPrz']) + '\' ')
+
+                result3 = self._query_db(query_skeleton)
+                print(result3)
+                new = float(result3[0]['Waga'].replace(',', '.'))
+                df[res['RSPO']] += float(res['SrWynik']) * new
+
 
             df = df.sort_values(ascending=False)
             print(df.head())
