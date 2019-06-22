@@ -120,12 +120,15 @@ class DataHandler:
             #print(result3)
 
             for res in results:
-                query_skeleton = 'SELECT * FROM prerekwizytyStudia WHERE IDKier = ' + \
+
+                query_skeleton = 'SELECT * FROM prerekwizytyStudia2 WHERE IDKier = ' + \
                                  str(' \'' + str(result2[0]['IDKier']) + '\' ') + 'AND  IDPrz = ' + str(
                     ' \'' + str(res['IDPrz']) + '\' ')
+
                 result3 = self._query_db(query_skeleton)
-                print(res['SrWynik'])
-                df[res['RSPO']] += res['SrWynik'] * result3[0]['Wynik']
+                print(result3)
+                new = float(result3[0]['Waga'].replace(',','.'))
+                df[res['RSPO']] += float(res['SrWynik']) * new
 
             df = df.sort_values(ascending=False)
             print(df.head())
