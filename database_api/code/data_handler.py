@@ -83,16 +83,22 @@ class DataHandler:
                 list_of_rspos.append(res['RSPO'])
 
             query_skeleton = 'SELECT RSPO FROM szkolyPlacowki WHERE RSPO IN '+ str(tuple(list_of_rspos)) + \
-                             'AND Typ = ' + str(' \''+ type + '\' ')+' '
+                             ' AND Typ = ' + str(' \''+ str(type) + '\' ' ) +' '
+
             result1 = self._query_db(query_skeleton)
+
             list_of_rspos = list()
             for res in result1:
                 list_of_rspos.append(res['RSPO'])
+            if len(list_of_rspos) != 0:
+                query_skeleton = 'SELECT RSPO, Miejscowosc, LatitudeN, LongitudeE, Ulica, NrDomu, KodPocztowy,' \
+                                 'Telefon, WWW, Email FROM szkolyAdresy WHERE RSPO IN ' + str(tuple(list_of_rspos)) +' '
 
-            query_skeleton = 'SELECT RSPO, Miejscowosc,LatitudeN, LongitudeE, Ulica, NrDomu, KodPocztowy,  ' \
-                             ' Telefon, WWW, Email FROM szkolyAdresy WHERE RSPO IN ' + str(tuple(list_of_rspos))
+                print(query_skeleton)
+                result = self._query_db(query_skeleton)
+            else:
+                result = []
 
-            result = self._query_db(query_skeleton)
         if sorted == 1:
             list_of_rspos = list()
             for res in result:
@@ -115,12 +121,15 @@ class DataHandler:
             #print(result3)
 
             for res in results:
-                query_skeleton = 'SELECT * FROM prerekwizytyStudia WHERE IDKier = ' + \
+
+                query_skeleton = 'SELECT * FROM prerekwizytyStudia2 WHERE IDKier = ' + \
                                  str(' \'' + str(result2[0]['IDKier']) + '\' ') + 'AND  IDPrz = ' + str(
                     ' \'' + str(res['IDPrz']) + '\' ')
+
                 result3 = self._query_db(query_skeleton)
-                print(res['SrWynik'])
-                df[res['RSPO']] += res['SrWynik'] * result3[0]['Wynik']
+                print(result3)
+                new = float(result3[0]['Waga'].replace(',','.'))
+                df[res['RSPO']] += float(res['SrWynik']) * new
 
             df = df.sort_values(ascending=False)
             print(df.head())
