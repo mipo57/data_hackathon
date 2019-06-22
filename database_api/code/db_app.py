@@ -23,18 +23,22 @@ def get_by_distance():
 
 @app.route('/database_api/get_schools')
 def get_schools():
-    print(request.args)
-    sorted = request.args.get("sorted",default=1)
-    sortby = request.args.get("sortby",default='matura')
-    city = request.args.get("city",default='*')
-    for_disabled = request.args.get("for_disabled",default=0)
+    sorted = request.args.get("sorted", default=1)
+    sortby = request.args.get("sortby", default='matura')
+    for_disabled = request.args.get("for_disabled", default=0)
     limit = request.args.get("limit", default=30)
-    local = request.args.get("local", default=0)
+    local = request.args.get("local", default=1)
+    city = request.args.get("city", default='*')
+    if city != '*':
+        local = 0
+    latitudeN = request.args.get("latN", default = 0)
+    longitudeE = request.args.get("lonE", default = 0)
     distance = request.args.get("distance",default = 5)
-    type = request.args.get("type",default='liceum')
+    type = request.args.get("type",default='nie')
     dh = DataHandler()
     return dh.get_schools(int(sorted), str(sortby), str(city), int(for_disabled),
-                          int(limit), int(local), int(distance), str(type))
+                          int(limit), int(local), int(distance), str(type),
+                          float(latitudeN), float(longitudeE))
 
 
 
