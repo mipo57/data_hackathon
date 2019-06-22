@@ -1,5 +1,8 @@
 #school_view {
-    width: 500px;
+    width: 100vw;
+    height: 100vh;
+    max-height: none;
+    top: 0 !important;
 
     .logo {
         height: 2.5rem;
@@ -11,6 +14,9 @@
 
     nav {
         background-color: #20A291;
+        margin-bottom: 4rem;
+        display: flex;
+        align-items: center;
 
         .nav-wrapper {
             display: flex;

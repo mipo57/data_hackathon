@@ -80,43 +80,52 @@
     </div>
 
     <!-- School view -->
-    <ul id="school_view" class="sidenav">
+    <ul id="school_view" class="modal">
         <nav>
-            <div class="nav-wrapper">
-                <img class="logo" src="images/logo_white.png" alt="">
+            <div class="container">
+                <div class="nav-wrapper">
+                    <img class="logo" src="images/logo_white.png" alt="">
+                    <ul id="nav-mobile" class="right hide-on-med-and-down" style="margin-left:auto;">
+                        <li><a href="sass.html">X</a></li>
+                    </ul>
+                </div>
             </div>
-        </nav>
-        <h3 id="szkola-nazwa" class="school-name">Liceum ogólnokształcące nr. 3</h3>
-        <div class="school-rating"></div>
 
-        <ul class="collection">
-            <li class="collection-item avatar">
-                <i class="material-icons circle">map</i>
-                <span class="title">Lokalizacja</span>
-                <p id="szkola_adres">
-                </p>
+        </nav>
+        <div class="container">
+            <h3 id="szkola-nazwa" class="school-name">Liceum ogólnokształcące nr. 3</h3>
+            <div class="school-rating"></div>
+
+            <ul class="collection">
+                <li class="collection-item avatar">
+                    <i class="material-icons circle">map</i>
+                    <span class="title">Lokalizacja</span>
+                    <p id="szkola_adres">
+                    </p>
+                </li>
+                <li class="collection-item avatar">
+                    <i class="material-icons circle">contact_phone</i>
+                    <span class="title">Dane kontaktowe</span>
+                    <p id="szkola_kontakt"></p>
+                </li>
+            </ul>
+            <li>
+                <div class="chart-container" style="position: relative">
+                    <canvas id="wykres_matury"></canvas>
+                </div>
             </li>
-            <li class="collection-item avatar">
-                <i class="material-icons circle">contact_phone</i>
-                <span class="title">Dane kontaktowe</span>
-                <p id="szkola_kontakt"></p>
+            <li>
+                <div class="chart-container" style="position: relative">
+                    <canvas id="wykres_koedukacja"></canvas>
+                </div>
             </li>
-        </ul>
-        <li>
-            <div class="chart-container" style="position: relative">
-                <canvas id="wykres_matury"></canvas>
-            </div>
-        </li>
-        <li>
-            <div class="chart-container" style="position: relative">
-                <canvas id="wykres_koedukacja"></canvas>
-            </div>
-        </li>
-        <li>
-            <div class="chart-container" style="position: relative">
-                <canvas id="wykres_wyniki_matur"></canvas>
-            </div>
-        </li>
+            <li>
+                <div class="chart-container" style="position: relative">
+                    <canvas id="wykres_wyniki_matur"></canvas>
+                </div>
+            </li>
+        </div>
+
         <!--
         <li><a href="#!"><i class="material-icons">cloud</i>First Link With Icon</a></li>
         <li><a href="#!">Second Link</a></li>
@@ -244,7 +253,7 @@
     showSchool = (school_info) => {
         console.log(school_info);
         //M.Modal.getInstance($('.modal').get(0)).open();
-        M.Sidenav.getInstance($('#school_view').get(0)).open();
+        M.Modal.getInstance($('#school_view').get(0)).open();
 
         // adress
         let adress_ln1 = "ul. " + school_info['Ulica'] + " " + school_info['NrDomu']
@@ -320,7 +329,7 @@
             }
         });
 
-        $.get("database_api/getByStudTeach?dist=10&rspo=" + school_info['RSPO'], (result) => {
+        $.get("database_api/getSimilarSchools?dist=10&rspo=" + school_info['RSPO'], (result) => {
             result = JSON.parse(result);
             console.log(result);
             wyniki_matur = {
