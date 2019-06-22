@@ -35,21 +35,40 @@ def extract_city(phrases):
             return value
     return ""
 
+def extract_type(phrases):
+    possible_criterias = {
+        u'liceum': 'Liceum Ogólnokształcące'
+    }
+
+    for phrase in phrases:
+        phrase = phrase['dominant'].lower()
+
+        for key, value in possible_criterias.items():
+            if key in phrase:
+                return value
+
+    return ""
+
 def extract_performance_criteria(phrases):
     possible_criterias = {
-        u"angielski": "angielski", 
-        u"niemiecki": "niemiecki", 
-        u"francuski": "francuski", 
-        u"matematyka": "matematyka",
-        u"matematyczny": "matematyka",
-        u"językowy": "jezyk",
-        u"kryminolog": "kryminolog",
-        u"administracja": "administracja",
-        u"analityka gospodarczy": "analityka gospodarcza",
-        u"analiza dana": "analiza danych",
-        u"architektura": "architektura",
-        u"najwięcej uwaga": "nauczyciel_na_dziecko",
-        u"przyszłość": "przyszłość"
+        u"angielski": "18", 
+        u"niemiecki": "21", 
+        u"francuski": "19", 
+        u"matematyka": "87",
+        u"matematyczny": "87",
+        u"językowy": "88",
+        u"językowy": "88",
+        u"kryminolog": "44",
+        u"kryminologia": "44",
+        u"administracja": "0",
+        u"analityka gospodarczy": "1",
+        u"analiza dana": "2",
+        u"architektura": "3",
+        u"architekt": "3",
+        u"lotnictwo": "47",
+        u"lotnik": "47",
+        u"kosmonautyka": "47",
+        u"kosmonauta": "47"
     }
 
     for phrase in phrases:
@@ -109,13 +128,15 @@ def process_text():
     is_sorted = check_is_sorted(phrases)
     is_local = not city and check_is_local_search(phrases)
     is_for_disabled = check_is_for_disabled(phrases)
+    school_type = extract_type(phrases)
 
     ret = {
         "city": city,
         "criteria": criteria,
         "sorted": is_sorted,
         "local": is_local,
-        "for_disabled": is_for_disabled
+        "for_disabled": is_for_disabled,
+        "type": school_type
     }
 
     return json.dumps(ret)

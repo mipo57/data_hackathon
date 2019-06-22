@@ -5,11 +5,11 @@ services:
     volumes:
       - ./frontend:/var/www:ro
   process_text:
-    image: "mipo57/process_text"
+    build: "./process_text"
   database_api:
     build: "./database_api"
   database:
-    image: "antyfilidor/hackathon:alpha"
+    image: "antyfilidor/hackathon:beta"
     environment:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=P@ssw0rd

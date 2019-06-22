@@ -206,12 +206,14 @@
     var map = L.map('map').setView([51.1202707, 17.0271432,], 15);
     base_layer.addTo(map);
 
+    var latitude = 52.2312004;
+    var longitude = 20.9984142;
     // Show current location
     var has_location = false
     navigator.geolocation.getCurrentPosition((position) => {
         try {
-            var latitude = position.coords.latitude;
-            var longitude = position.coords.longitude;
+            latitude = position.coords.latitude;
+            longitude = position.coords.longitude;
 
             var home_icon = L.ExtraMarkers.icon({
                 icon: 'fa-home',
@@ -265,7 +267,6 @@
     var coeducation_chart = null;
     var comparison_chart = null;
     showSchool = (school_info) => {
-        console.log(school_info);
         //M.Modal.getInstance($('.modal').get(0)).open();
         M.Modal.getInstance($('#school_view').get(0)).open();
 
@@ -282,7 +283,6 @@
 
         $.get("/database_api/getFullInfo?rspo=" + school_info['RSPO'], (result) => {
             result = JSON.parse(result)
-            console.log(result)
 
             $('#szkola-nazwa').html(result[0][0]['Nazwa']);
 
@@ -358,7 +358,6 @@
 
         $.get("database_api/getSimilarSchools?dist=10&rspo=" + school_info['RSPO'], (result) => {
             result = JSON.parse(result);
-            console.log(result);
 
             szkola_1_nazwa = result[0]['Nazwa']
             szkola_2_nazwa = result[1]['Nazwa']
@@ -434,14 +433,19 @@
         var url = TEXT_PROCESS_SERVER + "?text=" + encodeURIComponent(value)
 
         $.get(url, (resp) => {
+            console.log(resp);
             resp = JSON.parse(resp);
             let is_sorted = resp.sorted;
 
-            query = "/database_api/get_schools?limit=800";
+            query = "/database_api/get_schools?limit=";
 
-            console.log(resp);
+            if (resp.sorted) {
+                query += 800;
+            } else {
+                query += 800;
+            }
 
-            if (resp.city!="") {
+            if (resp.city != "") {
                 query += "&city=" + resp.city;
             }
             if (resp.for_disabled) {
@@ -451,7 +455,7 @@
                 query += "&sorted=1"
 
                 if (resp.criteria == "") {
-                    resp.criteria = "matematyka"
+                    resp.criteria = "87"
                 }
             } else {
                 query += "&sorted=0";
@@ -459,66 +463,72 @@
             if (resp.criteria != "") {
                 query += "&sortby=" + resp.criteria;
             }
+            if (resp.local) {
+                query += "&local=1";
+                query += "&longitudeE=" + longitude;
+                query += "&latitudeN=" + latitude;
+            }
+            if (resp.type != "") {
+                query += "&type=" + resp.type
+            }
 
             console.log(query);
 
-            if (resp.city != "") {
-                $.get(query, (resp) => {
-                    resp = JSON.parse(resp)
-                    var mid_latitude = 0;
-                    var mid_longitude = 0;
-                    var markers = L.markerClusterGroup();
-                    var best_markers = L.layerGroup();
+            $.get(query, (resp) => {
+                resp = JSON.parse(resp)
+                var mid_latitude = 0;
+                var mid_longitude = 0;
+                var markers = L.markerClusterGroup();
+                var best_markers = L.layerGroup();
 
-                    for (i = 0; i < resp.length; i++) {
-                        let school = resp[i]
-                        latitude = school.LatitudeN;
-                        longitude = school.LongitudeE;
+                for (i = 0; i < resp.length; i++) {
+                    let school = resp[i]
+                    latitude = school.LatitudeN;
+                    longitude = school.LongitudeE;
 
-                        if (latitude != null && longitude != null) {
-
-                            if (is_sorted) {
-                                if (i < 3) {
-                                    marker = L.marker([latitude, longitude], { icon: star_icon(i + 1) })
-                                    marker.on("click", () => showSchool(school))
-                                    best_markers.addLayer(marker);
-                                } else {
-                                    marker = L.marker([latitude, longitude], { icon: normal_icon(i + 1) })
-                                    marker.on("click", () => showSchool(school))
-                                    markers.addLayer(marker);
-                                }
+                    if (latitude != null && longitude != null) {
+                        if (is_sorted) {
+                            if (i < 3) {
+                                marker = L.marker([latitude, longitude], { icon: star_icon(i + 1) })
+                                marker.on("click", () => showSchool(school))
+                                best_markers.addLayer(marker);
                             } else {
-                                marker = L.marker([latitude, longitude])
+                                marker = L.marker([latitude, longitude], { icon: normal_icon(i + 1) })
                                 marker.on("click", () => showSchool(school))
                                 markers.addLayer(marker);
                             }
-
-                            mid_latitude += latitude / resp.length;
-                            mid_longitude += longitude / resp.length;
+                        } else {
+                            marker = L.marker([latitude, longitude])
+                            marker.on("click", () => showSchool(school))
+                            markers.addLayer(marker);
                         }
+
+                        mid_latitude += latitude / resp.length;
+                        mid_longitude += longitude / resp.length;
                     }
+                }
 
-                    if (actual_markers != null) {
-                        map.removeLayer(actual_markers);
-                        delete actual_markers;
-                        actual_markers = null;
-                    }
+                if (actual_markers != null) {
+                    map.removeLayer(actual_markers);
+                    delete actual_markers;
+                    actual_markers = null;
+                }
 
-                    if (actual_best_markers != null) {
-                        map.removeLayer(actual_best_markers);
-                        delete actual_best_markers;
-                        actual_best_markers = null;
-                    }
+                if (actual_best_markers != null) {
+                    map.removeLayer(actual_best_markers);
+                    delete actual_best_markers;
+                    actual_best_markers = null;
+                }
 
-                    map.addLayer(markers);
-                    map.addLayer(best_markers);
+                map.addLayer(markers);
+                map.addLayer(best_markers);
 
-                    actual_markers = markers;
-                    actual_best_markers = best_markers;
+                actual_markers = markers;
+                actual_best_markers = best_markers;
 
-                    map.panTo([mid_latitude, mid_longitude]);
-                });
-            }
+                map.panTo([mid_latitude, mid_longitude]);
+            });
+
         });
     });
 </script>
