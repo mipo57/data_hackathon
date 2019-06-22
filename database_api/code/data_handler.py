@@ -73,7 +73,7 @@ class DataHandler:
                 list_of_rspos.append(res['RSPO'])
 
             query_skeleton = 'SELECT RSPO, Miejscowosc,LatitudeN, LongitudeE, Ulica, NrDomu, KodPocztowy,  ' \
-                             ' Telefon, WWW, Email FROM szkolyAdresy/ WHERE RSPO IN ' + str(tuple(list_of_rspos))
+                             ' Telefon, WWW, Email FROM szkolyAdresy WHERE RSPO IN ' + str(tuple(list_of_rspos))
 
             result = self._query_db(query_skeleton)
 
@@ -81,7 +81,8 @@ class DataHandler:
             list_of_rspos = list()
             for res in result:
                 list_of_rspos.append(res['RSPO'])
-            query_skeleton = 'SELECT RSPO FROM / WHERE RSPO IN '+ str(tuple(list_of_rspos)) + \
+
+            query_skeleton = 'SELECT RSPO FROM szkolyPlacowki WHERE RSPO IN '+ str(tuple(list_of_rspos)) + \
                              'AND Typ = ' + str(' \''+ type + '\' ')+' '
             result1 = self._query_db(query_skeleton)
             list_of_rspos = list()
