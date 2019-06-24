@@ -54,6 +54,7 @@ def extract_performance_criteria(phrases):
         u"angielski": "18", 
         u"niemiecki": "21", 
         u"francuski": "19", 
+        u"włoski": "85", 
         u"matematyka": "87",
         u"matematyczny": "87",
         u"językowy": "88",
